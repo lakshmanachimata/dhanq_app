@@ -550,11 +550,11 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
               } else {
                 viewModel.startListening(context);
                 // Simulate voice input for demo
-                Future.delayed(const Duration(seconds: 2), () {
-                  viewModel.stopListening();
-                  viewModel.processVoiceInput('Khaad khareeda ₹300 ka');
-                  _scrollToBottom();
-                });
+                // Future.delayed(const Duration(seconds: 2), () {
+                //   viewModel.stopListening();
+                //   viewModel.processVoiceInput('Khaad khareeda ₹300 ka');
+                //   _scrollToBottom();
+                // });
               }
             },
             child: Container(

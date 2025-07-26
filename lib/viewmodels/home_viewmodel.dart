@@ -1,16 +1,20 @@
+import 'package:dhanq_app/models/voice_assist_model.dart';
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/activity_model.dart';
 import '../models/financial_service_model.dart';
 import '../models/home_data_model.dart';
 import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
+import '../services/voice_assist_service.dart';
 import '../utils/permission_helper.dart';
 
 enum HomeViewState { initial, loading, loaded, error }
 
 class HomeViewModel extends ChangeNotifier {
   final HomeService _service = HomeService();
+  final VoiceAssistService _voiceAssistService = VoiceAssistService();
 
   HomeViewState _state = HomeViewState.initial;
   HomeDataModel? _homeData;
@@ -31,6 +35,13 @@ class HomeViewModel extends ChangeNotifier {
   bool get isListening => _isListening;
   bool get onboardingCompleted => _onboardingCompleted;
   bool get isOnboardingLoading => _isOnboardingLoading;
+
+  LanguageType _selectedLanguage = LanguageType.english;
+  String _voiceInput = '';
+
+  // Getters
+  LanguageType get selectedLanguage => _selectedLanguage;
+  String get voiceInput => _voiceInput;
 
   // Legacy getters for backward compatibility
   PortfolioModel? get portfolioData => _homeData?.portfolio;
@@ -82,8 +93,111 @@ class HomeViewModel extends ChangeNotifier {
 
     _isListening = true;
     notifyListeners();
+    // Start listening to audio and convert to text
+    await _listenAndTranscribe(context);
 
     // Add your voice listening logic here
+  }
+
+  Future<void> _listenAndTranscribe(BuildContext context) async {
+    try {
+      final speech = SpeechToText();
+      bool available = await speech.initialize(
+        onStatus: (status) {
+          if (status == 'notListening') {
+            stopListening();
+          }
+        },
+        onError: (error) {
+          stopListening();
+          debugPrint('Speech recognition error: $error');
+        },
+      );
+
+      if (available) {
+        await speech.listen(
+          onResult: (result) {
+            if (result.finalResult) {
+              setVoiceInput(result.recognizedWords);
+              stopListening();
+            }
+          },
+          localeId: _selectedLanguage == LanguageType.hindi ? 'hi_IN' : 'en_US',
+        );
+      } else {
+        debugPrint('Speech recognition not available');
+        stopListening();
+      }
+    } catch (e) {
+      debugPrint('Error during speech recognition: $e');
+      stopListening();
+    }
+  }
+
+  void stopListening() {
+    _isListening = false;
+    notifyListeners();
+  }
+
+  void setVoiceInput(String input) {
+    _voiceInput = input;
+    notifyListeners();
+  }
+
+  // Process voice input
+  Future<void> processVoiceInput(String input) async {
+    if (input.trim().isEmpty) return;
+
+    // Add user message
+    final userMessage = await _voiceAssistService.processVoiceInput(
+      input,
+      _selectedLanguage,
+    );
+    notifyListeners();
+
+    // Generate response
+    final response = await _voiceAssistService.generateResponse(
+      userMessage,
+      _selectedLanguage,
+    );
+    notifyListeners();
+
+    // Clear input
+    _voiceInput = '';
+    notifyListeners();
+  }
+
+  // Add text message
+  Future<void> sendTextMessage(String message) async {
+    if (message.trim().isEmpty) return;
+
+    await processVoiceInput(message);
+  }
+
+  // Get localized text
+  String getLocalizedText(String englishText, String hindiText) {
+    return _selectedLanguage == LanguageType.hindi ? hindiText : englishText;
+  }
+
+  // Get greeting message
+  String getGreetingMessage() {
+    final hour = DateTime.now().hour;
+    String greeting;
+
+    if (hour < 12) {
+      greeting =
+          _selectedLanguage == LanguageType.hindi ? 'सुप्रभात' : 'Good morning';
+    } else if (hour < 17) {
+      greeting =
+          _selectedLanguage == LanguageType.hindi
+              ? 'सुधोपहर'
+              : 'Good afternoon';
+    } else {
+      greeting =
+          _selectedLanguage == LanguageType.hindi ? 'सुसंध्या' : 'Good evening';
+    }
+
+    return '$greeting, Rajan! ${_selectedLanguage == LanguageType.hindi ? 'मैं आपकी कैसे मदद कर सकता हूं?' : 'How can I help you today?'}';
   }
 
   // Handle service selection

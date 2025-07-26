@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildHeader(viewModel),
 
             // Search Bar
-            // _buildSearchBar(viewModel),
+            _buildSearchBar(viewModel),
 
             // Portfolio Section
             _buildPortfolioSection(viewModel),
@@ -301,8 +301,29 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           GestureDetector(
-            onTap: () => viewModel.startVoiceListening(context),
-            child: const Icon(Icons.mic, color: const Color(0xFF1E3A8A)),
+            onTap: () {
+              if (viewModel.isListening) {
+                viewModel.stopListening();
+              } else {
+                viewModel.startVoiceListening(context);
+              }
+            },
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color:
+                    viewModel.isListening
+                        ? Colors.red
+                        : const Color(0xFF1E3A8A),
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: Icon(
+                viewModel.isListening ? Icons.stop : Icons.mic,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
           ),
         ],
       ),
