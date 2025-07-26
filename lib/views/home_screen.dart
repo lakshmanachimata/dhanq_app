@@ -10,6 +10,7 @@ import 'asset_management_screen.dart';
 import 'debt_doctor_screen.dart';
 import 'financial_health_score_screen.dart';
 import 'integrations_screen.dart';
+import 'kisaan_saathi_screen.dart';
 import 'login_screen.dart';
 import 'smart_investor_screen.dart';
 import 'tax_whisperer_screen.dart';
@@ -479,6 +480,13 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Fintech Connect':
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const IntegrationsScreen()),
+        );
+        break;
+      case 'Kisaan Saathi':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const KisaanSaathiScreen(),
+          ),
         );
         break;
       // Add other service navigations here
