@@ -13,6 +13,24 @@ class PortfolioModel {
     required this.gainPercentage,
   });
 
+  factory PortfolioModel.fromJson(Map<String, dynamic> json) {
+    return PortfolioModel(
+      totalValue: json['totalValue'].toDouble(),
+      todayGain: json['todayGain'].toDouble(),
+      totalGain: json['totalGain'].toDouble(),
+      gainPercentage: json['gainPercentage'].toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'totalValue': totalValue,
+      'todayGain': todayGain,
+      'totalGain': totalGain,
+      'gainPercentage': gainPercentage,
+    };
+  }
+
   String get formattedTotalValue => '₹${_formatNumber(totalValue)}';
   String get formattedTodayGain => '${todayGain >= 0 ? '+' : ''}₹${_formatNumber(todayGain)}';
   String get formattedTotalGain => '${totalGain >= 0 ? '+' : ''}₹${_formatNumber(totalGain)}';

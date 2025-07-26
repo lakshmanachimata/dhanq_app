@@ -1,76 +1,68 @@
 import 'package:flutter/material.dart';
+
 import '../models/activity_model.dart';
 import '../models/financial_service_model.dart';
+import '../models/home_data_model.dart';
 import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
 
-enum HomeViewState { initial, loading, success, error }
+enum HomeViewState { initial, loading, loaded, error }
 
 class HomeViewModel extends ChangeNotifier {
-  final HomeService _homeService = HomeService();
-  
+  final HomeService _service = HomeService();
+
   HomeViewState _state = HomeViewState.initial;
+  HomeDataModel? _homeData;
+  String? _errorMessage;
   LocationType _locationType = LocationType.urban;
   String _searchQuery = '';
-  String _voiceResponse = '';
-  
-  PortfolioModel? _portfolioData;
-  List<ActivityModel> _recentActivities = [];
-  List<FinancialServiceModel> _financialServices = [];
+  bool _isListening = false;
   bool _onboardingCompleted = false;
   bool _isOnboardingLoading = false;
 
   // Getters
   HomeViewState get state => _state;
+  HomeDataModel? get homeData => _homeData;
+  String? get errorMessage => _errorMessage;
+  bool get isLoading => _state == HomeViewState.loading;
   LocationType get locationType => _locationType;
   String get searchQuery => _searchQuery;
-  String get voiceResponse => _voiceResponse;
-  PortfolioModel? get portfolioData => _portfolioData;
-  List<ActivityModel> get recentActivities => _recentActivities;
-  List<FinancialServiceModel> get financialServices => _financialServices;
-  bool get isLoading => _state == HomeViewState.loading;
+  bool get isListening => _isListening;
   bool get onboardingCompleted => _onboardingCompleted;
   bool get isOnboardingLoading => _isOnboardingLoading;
 
+  // Legacy getters for backward compatibility
+  PortfolioModel? get portfolioData => _homeData?.portfolio;
+  List<ActivityModel> get recentActivities => _homeData?.activities ?? [];
+  List<FinancialServiceModel> get financialServices {
+    if (_homeData == null) return [];
+    final key = _locationType == LocationType.urban ? 'urban' : 'rural';
+    return _homeData!.financialServices[key] ?? [];
+  }
+
   // Initialize data
   Future<void> initializeData() async {
-    _setState(HomeViewState.loading);
-    
-    try {
-      await Future.wait([
-        _loadPortfolioData(),
-        _loadRecentActivities(),
-        _loadFinancialServices(),
-      ]);
-      
-      _setState(HomeViewState.success);
-    } catch (e) {
-      _setState(HomeViewState.error);
+    if (_state == HomeViewState.initial) {
+      _state = HomeViewState.loading;
+      notifyListeners();
+
+      try {
+        _homeData = await _service.getHomeData();
+        _onboardingCompleted =
+            _homeData?.userProfile.onboardingCompleted ?? false;
+        _state = HomeViewState.loaded;
+      } catch (e) {
+        _errorMessage = e.toString();
+        _state = HomeViewState.error;
+      }
+
+      notifyListeners();
     }
-  }
-
-  // Load portfolio data
-  Future<void> _loadPortfolioData() async {
-    _portfolioData = await _homeService.getPortfolioData();
-    notifyListeners();
-  }
-
-  // Load recent activities
-  Future<void> _loadRecentActivities() async {
-    _recentActivities = await _homeService.getRecentActivities();
-    notifyListeners();
-  }
-
-  // Load financial services
-  Future<void> _loadFinancialServices() async {
-    _financialServices = await _homeService.getFinancialServices(_locationType);
-    notifyListeners();
   }
 
   // Set location type
   void setLocationType(LocationType type) {
     _locationType = type;
-    _loadFinancialServices(); // Reload services for new location
     notifyListeners();
   }
 
@@ -80,80 +72,73 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Handle voice search
-  Future<void> handleVoiceSearch() async {
-    if (_searchQuery.isEmpty) return;
-    
-    _voiceResponse = await _homeService.processVoiceQuery(_searchQuery);
-    notifyListeners();
-  }
-
   // Start voice listening
   void startVoiceListening() {
-    // Implement voice listening functionality
-    print('Voice listening started');
-  }
+    _isListening = true;
+    notifyListeners();
 
-  // Stop voice listening
-  void stopVoiceListening() {
-    // Implement voice listening stop functionality
-    print('Voice listening stopped');
+    // Simulate voice processing
+    Future.delayed(const Duration(seconds: 2), () {
+      _isListening = false;
+      notifyListeners();
+    });
   }
 
   // Handle service selection
   void onServiceSelected(FinancialServiceModel service) {
-    print('Service selected: ${service.name}');
     // Handle service selection logic
   }
 
   // Handle activity selection
   void onActivitySelected(ActivityModel activity) {
-    print('Activity selected: ${activity.title}');
     // Handle activity selection logic
   }
 
   // Handle portfolio details
   void onPortfolioDetails() {
-    print('Portfolio details requested');
-    // Navigate to portfolio details screen
+    // Handle portfolio details navigation
   }
 
   // Handle see all activities
   void onSeeAllActivities() {
-    print('See all activities requested');
-    // Navigate to activities screen
-  }
-
-  // Refresh data
-  Future<void> refreshData() async {
-    await initializeData();
-  }
-
-  // Set state
-  void _setState(HomeViewState state) {
-    _state = state;
-    notifyListeners();
+    // Handle see all activities navigation
   }
 
   // Clear search
   void clearSearch() {
     _searchQuery = '';
-    _voiceResponse = '';
     notifyListeners();
   }
 
+  // Complete onboarding
   void completeOnboarding() async {
     _isOnboardingLoading = true;
     _onboardingCompleted = true;
     notifyListeners();
-    
+
     // Show 3-second loader
     await Future.delayed(const Duration(seconds: 3));
-    
+
     // Refresh home page data
     await initializeData();
-    
+
     _isOnboardingLoading = false;
     notifyListeners();
   }
-} 
+
+  // Refresh data
+  Future<void> refreshData() async {
+    _state = HomeViewState.loading;
+    notifyListeners();
+
+    try {
+      _homeData = await _service.getHomeData();
+      _state = HomeViewState.loaded;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _state = HomeViewState.error;
+    }
+
+    notifyListeners();
+  }
+}
