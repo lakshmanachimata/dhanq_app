@@ -98,13 +98,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: const Color(0xFF1E3A8A),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(
-                  child: Text(
-                    'DQ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                child: Center(
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'D',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Q',
+                          style: TextStyle(
+                            color: Color(0xFFEB5D37),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -118,17 +132,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextSpan(
                         text: 'Dhan',
                         style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
                           color: Color(0xFF1E3A8A),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       TextSpan(
                         text: 'Q',
                         style: TextStyle(
-                          fontSize: 24,
+                          color: Color(0xFFEB5D37),
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E3A8A),
                         ),
                       ),
                     ],
