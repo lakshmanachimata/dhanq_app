@@ -6,6 +6,7 @@ class FinancialServiceModel {
   final String description;
   final IconData icon;
   final Color color;
+  final String category;
 
   FinancialServiceModel({
     required this.id,
@@ -13,5 +14,6 @@ class FinancialServiceModel {
     required this.description,
     required this.icon,
     required this.color,
+    required this.category,
   });
 } 

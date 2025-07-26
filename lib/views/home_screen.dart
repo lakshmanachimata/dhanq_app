@@ -55,14 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              color: Color(0xFF1E3A8A),
-            ),
+            const CircularProgressIndicator(color: Color(0xFF1E3A8A)),
             const SizedBox(height: 16),
             Text(
-              viewModel.isOnboardingLoading 
-                ? 'Setting up your personalized experience...'
-                : 'Loading...',
+              viewModel.isOnboardingLoading
+                  ? 'Setting up your personalized experience...'
+                  : 'Loading...',
               style: const TextStyle(
                 fontSize: 16,
                 color: Color(0xFF1E3A8A),
@@ -446,8 +444,181 @@ class _HomeScreenState extends State<HomeScreen> {
               return _buildServiceCard(service, viewModel);
             },
           ),
+          // Goal Planning Card (Full Width) - Only for Urban
+          if (viewModel.locationType == LocationType.urban) ...[
+            const SizedBox(height: 8),
+            _buildGoalPlanningCard(viewModel),
+          ],
         ],
       ),
+    );
+  }
+
+  Widget _buildGoalPlanningCard(HomeViewModel viewModel) {
+    return GestureDetector(
+      onTap: () => _handleGoalPlanningTap(viewModel),
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF1E3A8A).withOpacity(0.05),
+              const Color(0xFF1E3A8A).withOpacity(0.02),
+            ],
+          ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: const Color(0xFF1E3A8A).withOpacity(0.1),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF1E3A8A).withOpacity(0.08),
+              spreadRadius: 2,
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF1E3A8A),
+                        const Color(0xFF1E3A8A).withOpacity(0.8),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF1E3A8A).withOpacity(0.3),
+                        spreadRadius: 1,
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.track_changes,
+                    size: 35,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Goal Planning',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E3A8A),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E3A8A).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Advanced Financial Planning',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1E3A8A),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E3A8A).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Color(0xFF1E3A8A),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildFeatureChip('Retirement'),
+                const SizedBox(width: 8),
+                _buildFeatureChip('Education'),
+                const SizedBox(width: 8),
+                _buildFeatureChip('Travel'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureChip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          color: Colors.grey[700],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  void _handleGoalPlanningTap(HomeViewModel viewModel) {
+    // Show a placeholder dialog for Goal Planning
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Goal Planning'),
+            content: const Text(
+              'Goal Planning feature coming soon! This will include complex multi-goal planning with detailed projections, Monte Carlo simulations, and personalized pathways.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -793,6 +964,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'Financial freedom in 5 years',
       'Clear Student loan in 4 years',
       'Earn on investment',
+      'Child Education support',
     ];
 
     showModalBottomSheet(

@@ -73,6 +73,7 @@ class HomeService {
           description: 'Comprehensive asset tracking and management',
           icon: Icons.business,
           color: Colors.blue,
+          category: 'urban',
         ),
         FinancialServiceModel(
           id: 'smart_investor',
@@ -80,6 +81,7 @@ class HomeService {
           description: 'AI-powered investment recommendations',
           icon: Icons.account_balance,
           color: Colors.green,
+          category: 'urban',
         ),
         FinancialServiceModel(
           id: 'debt_doctor',
@@ -87,6 +89,7 @@ class HomeService {
           description: 'Debt management and optimization',
           icon: Icons.medical_services,
           color: Colors.red,
+          category: 'urban',
         ),
         FinancialServiceModel(
           id: 'tax_whisperer',
@@ -94,6 +97,7 @@ class HomeService {
           description: 'Tax planning and optimization',
           icon: Icons.description,
           color: Colors.orange,
+          category: 'urban',
         ),
         FinancialServiceModel(
           id: 'financial_health',
@@ -101,6 +105,7 @@ class HomeService {
           description: 'Track your financial wellness',
           icon: Icons.favorite,
           color: Colors.pink,
+          category: 'urban',
         ),
         FinancialServiceModel(
           id: 'fintech_integration',
@@ -108,6 +113,7 @@ class HomeService {
           description: 'Connect with other financial services',
           icon: Icons.api,
           color: Colors.purple,
+          category: 'urban',
         ),
       ];
     } else {
@@ -118,6 +124,7 @@ class HomeService {
           description: 'Agricultural financial assistance',
           icon: Icons.agriculture,
           color: Colors.green,
+          category: 'rural',
         ),
         FinancialServiceModel(
           id: 'vyapar_margdarshak',
@@ -125,6 +132,7 @@ class HomeService {
           description: 'Business guidance and support',
           icon: Icons.store,
           color: Colors.blue,
+          category: 'rural',
         ),
         FinancialServiceModel(
           id: 'bachat_guru',
@@ -132,6 +140,7 @@ class HomeService {
           description: 'Savings optimization expert',
           icon: Icons.savings,
           color: Colors.teal,
+          category: 'rural',
         ),
         FinancialServiceModel(
           id: 'voice_assistant',
@@ -139,6 +148,7 @@ class HomeService {
           description: 'Voice-controlled financial tracking',
           icon: Icons.mic,
           color: Colors.indigo,
+          category: 'rural',
         ),
         FinancialServiceModel(
           id: 'financial_health_rural',
@@ -146,6 +156,7 @@ class HomeService {
           description: 'Track your financial wellness',
           icon: Icons.favorite,
           color: Colors.pink,
+          category: 'rural',
         ),
         FinancialServiceModel(
           id: 'fintech_integration_rural',
@@ -153,6 +164,7 @@ class HomeService {
           description: 'Connect with other financial services',
           icon: Icons.api,
           color: Colors.brown,
+          category: 'rural',
         ),
       ];
     }
