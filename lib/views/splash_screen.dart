@@ -136,4 +136,4 @@ class _SplashScreenState extends State<SplashScreen>
       textAlign: TextAlign.center,
     );
   }
-}
+} 

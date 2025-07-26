@@ -3,183 +3,195 @@ import 'package:flutter/material.dart';
 import '../models/activity_model.dart';
 import '../models/financial_service_model.dart';
 import '../models/portfolio_model.dart';
-import '../viewmodels/home_viewmodel.dart';
+
+enum LocationType { urban, rural }
 
 class HomeService {
-  // Simulate API call to get portfolio data
+  // Get portfolio data
   Future<PortfolioModel> getPortfolioData() async {
     await Future.delayed(const Duration(milliseconds: 500));
+    
     return PortfolioModel(
-      totalValue: 428750,
-      monthlyChange: 4.2,
-      investments: 285000,
-      savings: 125000,
-      expenses: 18750,
+      totalValue: 1250000,
+      todayGain: 12500,
+      totalGain: 150000,
+      gainPercentage: 13.6,
     );
   }
 
-  // Simulate API call to get recent activities
+  // Get recent activities
   Future<List<ActivityModel>> getRecentActivities() async {
     await Future.delayed(const Duration(milliseconds: 300));
+    
     return [
       ActivityModel(
         id: '1',
-        title: 'SIP Investment',
-        amount: 5000,
+        title: 'Stock Investment',
+        description: 'Purchased TechCorp shares',
+        amount: 25000,
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         type: ActivityType.investment,
-        date: DateTime.now(),
-        icon: 'trending_up',
       ),
       ActivityModel(
         id: '2',
-        title: 'Electricity Bill',
-        amount: 1450,
-        type: ActivityType.expense,
-        date: DateTime.now().subtract(const Duration(days: 1)),
-        icon: 'trending_down',
+        title: 'Mutual Fund Dividend',
+        description: 'Dividend received from Large Cap Fund',
+        amount: 1500,
+        timestamp: DateTime.now().subtract(const Duration(days: 1)),
+        type: ActivityType.dividend,
       ),
       ActivityModel(
         id: '3',
-        title: 'Salary Credit',
-        amount: 45000,
-        type: ActivityType.income,
-        date: DateTime.now().subtract(const Duration(days: 3)),
-        icon: 'trending_up',
+        title: 'Withdrawal',
+        description: 'ATM withdrawal',
+        amount: -5000,
+        timestamp: DateTime.now().subtract(const Duration(days: 2)),
+        type: ActivityType.withdrawal,
+      ),
+      ActivityModel(
+        id: '4',
+        title: 'Fund Transfer',
+        description: 'Transferred to savings account',
+        amount: -10000,
+        timestamp: DateTime.now().subtract(const Duration(days: 3)),
+        type: ActivityType.transfer,
       ),
     ];
   }
 
-  // Get financial services based on location
-  List<FinancialServiceModel> getFinancialServices(LocationType locationType) {
+  // Get financial services based on location type
+  Future<List<FinancialServiceModel>> getFinancialServices(LocationType locationType) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    
     if (locationType == LocationType.urban) {
       return [
         FinancialServiceModel(
           id: 'asset_management',
           name: 'Asset Management',
+          description: 'Comprehensive asset tracking and management',
           icon: Icons.business,
           color: Colors.blue,
-          description: 'Comprehensive asset tracking and management',
         ),
         FinancialServiceModel(
           id: 'smart_investor',
           name: 'Smart Investor Agent',
+          description: 'AI-powered investment recommendations',
           icon: Icons.account_balance,
           color: Colors.green,
-          description: 'AI-powered investment recommendations',
         ),
         FinancialServiceModel(
           id: 'debt_doctor',
           name: 'Debt-Doctor',
+          description: 'Debt management and optimization',
           icon: Icons.medical_services,
           color: Colors.red,
-          description: 'Debt management and optimization',
         ),
         FinancialServiceModel(
           id: 'tax_whisperer',
           name: 'Tax Whisperer',
+          description: 'Tax planning and optimization',
           icon: Icons.description,
           color: Colors.orange,
-          description: 'Tax planning and optimization',
         ),
         FinancialServiceModel(
           id: 'financial_health',
           name: 'Financial Health Score',
+          description: 'Track your financial wellness',
           icon: Icons.favorite,
           color: Colors.pink,
-          description: 'Track your financial wellness',
         ),
         FinancialServiceModel(
           id: 'fintech_integration',
-          name: 'FinTech Integration',
+          name: 'Integration with other FinTechs/APIs',
+          description: 'Connect with other financial services',
           icon: Icons.api,
           color: Colors.purple,
-          description: 'Integration with other FinTechs/APIs',
         ),
       ];
     } else {
-      // Rural services
       return [
         FinancialServiceModel(
           id: 'kisaan_saathi',
           name: 'Kisaan Saathi',
+          description: 'Agricultural financial assistance',
           icon: Icons.agriculture,
           color: Colors.green,
-          description: 'Farmer assistance and support',
         ),
         FinancialServiceModel(
           id: 'farm_finance',
           name: 'Farm Finance Optimization',
+          description: 'Optimize farm-related finances',
           icon: Icons.trending_up,
           color: Colors.blue,
-          description: 'Optimize farm financial planning',
         ),
         FinancialServiceModel(
-          id: 'govt_schemes',
+          id: 'gov_schemes',
           name: 'Government Scheme Integration',
+          description: 'Access government financial schemes',
           icon: Icons.account_balance,
           color: Colors.orange,
-          description: 'Access government schemes and subsidies',
         ),
         FinancialServiceModel(
-          id: 'weather_market',
+          id: 'weather_analysis',
           name: 'Weather & Market Impact Analysis',
+          description: 'Analyze weather impact on markets',
           icon: Icons.cloud,
-          color: Colors.lightBlue,
-          description: 'Weather and market impact on farming',
+          color: Colors.cyan,
         ),
         FinancialServiceModel(
           id: 'vyapar_margdarshak',
           name: 'Vyapar Margdarshak',
+          description: 'Business guidance and support',
           icon: Icons.store,
           color: Colors.purple,
-          description: 'Business guidance and mentorship',
         ),
         FinancialServiceModel(
           id: 'bachat_guru',
           name: 'Bachat Guru',
+          description: 'Savings optimization expert',
           icon: Icons.savings,
           color: Colors.teal,
-          description: 'Savings and investment guidance',
         ),
         FinancialServiceModel(
-          id: 'voice_assisted',
-          name: 'Voice-Assisted Transaction History',
+          id: 'voice_assistant',
+          name: 'Voice-Assisted Transaction History & Expense Categorization',
+          description: 'Voice-controlled financial tracking',
           icon: Icons.mic,
-          color: Colors.red,
-          description: 'Voice-assisted expense categorization',
+          color: Colors.indigo,
         ),
         FinancialServiceModel(
-          id: 'financial_health',
+          id: 'financial_health_rural',
           name: 'Financial Health Score',
+          description: 'Track your financial wellness',
           icon: Icons.favorite,
           color: Colors.pink,
-          description: 'Track your financial wellness',
         ),
         FinancialServiceModel(
-          id: 'fintech_integration',
-          name: 'FinTech Integration',
+          id: 'fintech_integration_rural',
+          name: 'Integration with other FinTechs/APIs',
+          description: 'Connect with other financial services',
           icon: Icons.api,
-          color: Colors.indigo,
-          description: 'Integration with other FinTechs/APIs',
+          color: Colors.brown,
         ),
       ];
     }
   }
 
-  // Simulate voice search
+  // Process voice query
   Future<String> processVoiceQuery(String query) async {
-    await Future.delayed(const Duration(seconds: 1));
-    if (query.toLowerCase().contains('savings')) {
-      return 'Your monthly savings are ₹12,500';
-    } else if (query.toLowerCase().contains('spend')) {
-      return 'You spent ₹18,750 this month';
-    } else {
-      return 'I can help you with your finances. Try asking about your savings or expenses.';
-    }
+    await Future.delayed(const Duration(milliseconds: 1000));
+    return 'I found information about $query. Here are the details...';
   }
 
   // Get portfolio breakdown
-  Map<String, double> getPortfolioBreakdown() {
-    return {'Investments': 285000, 'Savings': 125000, 'Expenses': 18750};
+  Future<Map<String, double>> getPortfolioBreakdown() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    
+    return {
+      'Stocks': 40.0,
+      'Mutual Funds': 30.0,
+      'Fixed Deposits': 20.0,
+      'Cash': 10.0,
+    };
   }
 }

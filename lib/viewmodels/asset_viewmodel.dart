@@ -3,6 +3,7 @@ import '../models/asset_model.dart';
 import '../services/asset_service.dart';
 
 enum AssetViewState { initial, loading, success, error }
+enum AssetTab { assets, liabilities, recurring }
 
 class AssetViewModel extends ChangeNotifier {
   final AssetService _assetService = AssetService();
@@ -10,34 +11,19 @@ class AssetViewModel extends ChangeNotifier {
   AssetViewState _state = AssetViewState.initial;
   AssetTab _selectedTab = AssetTab.assets;
   
-  Map<String, dynamic>? _netWorthData;
-  List<AssetAllocation> _assetAllocation = [];
-  List<AssetCategory> _assets = [];
-  List<AssetCategory> _liabilities = [];
-  List<AssetCategory> _recurring = [];
+  AssetAllocationModel? _assetAllocation;
+  List<AssetCategoryModel> _assetCategories = [];
+  List<AssetModel> _liabilities = [];
+  List<AssetModel> _recurringAssets = [];
 
   // Getters
   AssetViewState get state => _state;
   AssetTab get selectedTab => _selectedTab;
+  AssetAllocationModel? get assetAllocation => _assetAllocation;
+  List<AssetCategoryModel> get assetCategories => _assetCategories;
+  List<AssetModel> get liabilities => _liabilities;
+  List<AssetModel> get recurringAssets => _recurringAssets;
   bool get isLoading => _state == AssetViewState.loading;
-  
-  Map<String, dynamic>? get netWorthData => _netWorthData;
-  List<AssetAllocation> get assetAllocation => _assetAllocation;
-  List<AssetCategory> get assets => _assets;
-  List<AssetCategory> get liabilities => _liabilities;
-  List<AssetCategory> get recurring => _recurring;
-
-  // Get current data based on selected tab
-  List<AssetCategory> get currentTabData {
-    switch (_selectedTab) {
-      case AssetTab.assets:
-        return _assets;
-      case AssetTab.liabilities:
-        return _liabilities;
-      case AssetTab.recurring:
-        return _recurring;
-    }
-  }
 
   // Initialize data
   Future<void> initializeData() async {
@@ -45,11 +31,10 @@ class AssetViewModel extends ChangeNotifier {
     
     try {
       await Future.wait([
-        _loadNetWorthData(),
         _loadAssetAllocation(),
-        _loadAssets(),
+        _loadAssetCategories(),
         _loadLiabilities(),
-        _loadRecurring(),
+        _loadRecurringAssets(),
       ]);
       
       _setState(AssetViewState.success);
@@ -58,21 +43,15 @@ class AssetViewModel extends ChangeNotifier {
     }
   }
 
-  // Load net worth data
-  Future<void> _loadNetWorthData() async {
-    _netWorthData = await _assetService.getNetWorthData();
-    notifyListeners();
-  }
-
   // Load asset allocation
   Future<void> _loadAssetAllocation() async {
     _assetAllocation = await _assetService.getAssetAllocation();
     notifyListeners();
   }
 
-  // Load assets
-  Future<void> _loadAssets() async {
-    _assets = await _assetService.getAssets();
+  // Load asset categories
+  Future<void> _loadAssetCategories() async {
+    _assetCategories = await _assetService.getAssetsByCategory();
     notifyListeners();
   }
 
@@ -82,9 +61,9 @@ class AssetViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Load recurring
-  Future<void> _loadRecurring() async {
-    _recurring = await _assetService.getRecurring();
+  // Load recurring assets
+  Future<void> _loadRecurringAssets() async {
+    _recurringAssets = await _assetService.getRecurringAssets();
     notifyListeners();
   }
 
@@ -105,33 +84,27 @@ class AssetViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Get formatted net worth value
-  String get formattedNetWorthValue {
-    if (_netWorthData == null) return '₹0';
-    final value = _netWorthData!['totalValue'] as double;
-    return '₹${_formatNumber(value)}';
-  }
-
-  // Get formatted YTD change
-  String get formattedYtdChange {
-    if (_netWorthData == null) return '+0.0% YTD';
-    final change = _netWorthData!['ytdChange'] as double;
-    final isPositive = _netWorthData!['isPositive'] as bool;
-    return '${isPositive ? '+' : ''}${change.toStringAsFixed(1)}% YTD';
-  }
-
-  // Check if YTD change is positive
-  bool get isYtdPositive {
-    return _netWorthData?['isPositive'] ?? false;
-  }
-
-  // Format number helper
-  String _formatNumber(double number) {
-    if (number >= 100000) {
-      return '${(number / 100000).toStringAsFixed(1)}L';
-    } else if (number >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)}K';
+  // Get current tab data
+  List<dynamic> get currentTabData {
+    switch (_selectedTab) {
+      case AssetTab.assets:
+        return _assetCategories;
+      case AssetTab.liabilities:
+        return _liabilities;
+      case AssetTab.recurring:
+        return _recurringAssets;
     }
-    return number.toStringAsFixed(0);
+  }
+
+  // Get tab title
+  String get tabTitle {
+    switch (_selectedTab) {
+      case AssetTab.assets:
+        return 'Assets';
+      case AssetTab.liabilities:
+        return 'Liabilities';
+      case AssetTab.recurring:
+        return 'Recurring';
+    }
   }
 } 

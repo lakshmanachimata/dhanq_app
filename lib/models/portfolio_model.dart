@@ -1,52 +1,33 @@
+import 'package:flutter/material.dart';
+
 class PortfolioModel {
   final double totalValue;
-  final double monthlyChange;
-  final double investments;
-  final double savings;
-  final double expenses;
+  final double todayGain;
+  final double totalGain;
+  final double gainPercentage;
 
   PortfolioModel({
     required this.totalValue,
-    required this.monthlyChange,
-    required this.investments,
-    required this.savings,
-    required this.expenses,
+    required this.todayGain,
+    required this.totalGain,
+    required this.gainPercentage,
   });
 
-  factory PortfolioModel.fromJson(Map<String, dynamic> json) {
-    return PortfolioModel(
-      totalValue: (json['totalValue'] as num).toDouble(),
-      monthlyChange: (json['monthlyChange'] as num).toDouble(),
-      investments: (json['investments'] as num).toDouble(),
-      savings: (json['savings'] as num).toDouble(),
-      expenses: (json['expenses'] as num).toDouble(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'totalValue': totalValue,
-      'monthlyChange': monthlyChange,
-      'investments': investments,
-      'savings': savings,
-      'expenses': expenses,
-    };
-  }
-
   String get formattedTotalValue => '₹${_formatNumber(totalValue)}';
-  String get formattedMonthlyChange => '${monthlyChange >= 0 ? '+' : ''}${monthlyChange.toStringAsFixed(1)}% this month';
-  String get formattedInvestments => '₹${_formatNumber(investments)}';
-  String get formattedSavings => '₹${_formatNumber(savings)}';
-  String get formattedExpenses => '₹${_formatNumber(expenses)}';
+  String get formattedTodayGain => '${todayGain >= 0 ? '+' : ''}₹${_formatNumber(todayGain)}';
+  String get formattedTotalGain => '${totalGain >= 0 ? '+' : ''}₹${_formatNumber(totalGain)}';
+  String get formattedGainPercentage => '${gainPercentage >= 0 ? '+' : ''}${gainPercentage.toStringAsFixed(2)}%';
 
-  String _formatNumber(double number) {
-    if (number >= 100000) {
-      return '${(number / 100000).toStringAsFixed(1)}L';
-    } else if (number >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)}K';
-    }
-    return number.toStringAsFixed(0);
+  Color get todayGainColor => todayGain >= 0 ? Colors.green : Colors.red;
+  Color get totalGainColor => totalGain >= 0 ? Colors.green : Colors.red;
+  Color get gainPercentageColor => gainPercentage >= 0 ? Colors.green : Colors.red;
+}
+
+String _formatNumber(double number) {
+  if (number >= 100000) {
+    return '${(number / 100000).toStringAsFixed(1)}L';
+  } else if (number >= 1000) {
+    return '${(number / 1000).toStringAsFixed(1)}K';
   }
-
-  bool get isPositiveChange => monthlyChange >= 0;
+  return number.toStringAsFixed(0);
 } 

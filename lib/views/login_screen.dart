@@ -1,382 +1,193 @@
-import 'package:dhanq_app/views/sign_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-
 import '../viewmodels/login_viewmodel.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => LoginViewModel(),
-      child: const _LoginScreenContent(),
-    );
-  }
-}
-
-class _LoginScreenContent extends StatefulWidget {
-  const _LoginScreenContent();
-
-  @override
-  State<_LoginScreenContent> createState() => _LoginScreenContentState();
-}
-
-class _LoginScreenContentState extends State<_LoginScreenContent> {
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _mpinController = TextEditingController();
-  final FocusNode _phoneFocusNode = FocusNode();
-  final FocusNode _mpinFocusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    _phoneController.addListener(_onPhoneChanged);
-    _mpinController.addListener(_onMpinChanged);
-  }
-
-  @override
-  void dispose() {
-    _phoneController.removeListener(_onPhoneChanged);
-    _mpinController.removeListener(_onMpinChanged);
-    _phoneController.dispose();
-    _mpinController.dispose();
-    _phoneFocusNode.dispose();
-    _mpinFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _onPhoneChanged() {
-    final viewModel = context.read<LoginViewModel>();
-    viewModel.setPhoneNumber(_phoneController.text);
-  }
-
-  void _onMpinChanged() {
-    final viewModel = context.read<LoginViewModel>();
-    viewModel.setMpin(_mpinController.text);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1E3A8A), // Royal blue background
-      body: SafeArea(
-        child: Consumer<LoginViewModel>(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Consumer<LoginViewModel>(
           builder: (context, viewModel, child) {
-            return _buildContent(context, viewModel);
+            return _buildBody(viewModel);
           },
         ),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, LoginViewModel viewModel) {
-    // Handle success state
-    if (viewModel.state == LoginViewState.success && viewModel.user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      });
-    }
-
+  Widget _buildBody(LoginViewModel viewModel) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Status bar space
-            const SizedBox(height: 20),
-
-            // Logo
-            _buildLogo(),
+            const SizedBox(height: 80),
+            
+            // Logo and Title
+            _buildHeader(),
+            
             const SizedBox(height: 40),
-
-            // Title
-            _buildTitle(),
-            const SizedBox(height: 40),
-
-            // Login options
-            _buildLoginOptions(viewModel),
-            const SizedBox(height: 24),
-
-            // Error message
+            
+            // Login Methods
+            _buildLoginMethods(viewModel),
+            
+            const SizedBox(height: 32),
+            
+            // Phone Number Input
+            if (viewModel.selectedMethod == LoginMethod.mobile)
+              _buildPhoneInput(viewModel),
+            
+            // mPIN Input
+            if (viewModel.selectedMethod == LoginMethod.mpin)
+              _buildMpinInput(viewModel),
+            
+            // Error Message
             if (viewModel.errorMessage.isNotEmpty)
               _buildErrorMessage(viewModel),
-
+            
             const SizedBox(height: 24),
-
-            // Continue button
+            
+            // Continue Button
             _buildContinueButton(viewModel),
-
-            const SizedBox(height: 40),
-
-            // Register link
-            _buildRegisterLink(),
-
-            const SizedBox(height: 40),
+            
+            const Spacer(),
+            
+            // Footer
+            _buildFooter(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLogo() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.red, width: 2),
-      ),
-      child: const Center(
-        child: Text(
-          'DhanQ',
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return const Text(
-      'Welcome Back',
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
-  Widget _buildLoginOptions(LoginViewModel viewModel) {
+  Widget _buildHeader() {
     return Column(
       children: [
-        // Mobile login option
-        _buildMobileLoginCard(viewModel),
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E3A8A),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Center(
+            child: Text(
+              'DQ',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
         const SizedBox(height: 16),
-
-        // mPIN login option
-        _buildMpinLoginCard(viewModel),
-        const SizedBox(height: 16),
-
-        // Biometric login option
-        _buildBiometricLoginCard(viewModel),
+        const Text(
+          'Welcome to DhanQ',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Your Financial Companion',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildMobileLoginCard(LoginViewModel viewModel) {
-    final isSelected = viewModel.selectedMethod == LoginMethod.mobile;
-
-    return GestureDetector(
-      onTap: () => viewModel.setSelectedMethod(LoginMethod.mobile),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border:
-              isSelected
-                  ? Border.all(color: const Color(0xFFFFD700), width: 2)
-                  : null,
+  Widget _buildLoginMethods(LoginViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Choose Login Method',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        const SizedBox(height: 16),
+        Row(
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.phone,
-                  color: const Color(0xFF1E3A8A), // Brown color
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Login with Mobile',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
+            Expanded(
+              child: _buildMethodCard(
+                'Mobile',
+                Icons.phone_android,
+                LoginMethod.mobile,
+                viewModel,
+              ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                // Country code
-                Container(
-                  width: 80,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFE4B5), // Light peach
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '+91',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // Phone number field
-                Expanded(
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: TextField(
-                      controller: _phoneController,
-                      focusNode: _phoneFocusNode,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(10),
-                      ],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                      decoration: const InputDecoration(
-                        hintText: 'Enter mobile number',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildMethodCard(
+                'mPIN',
+                Icons.lock,
+                LoginMethod.mpin,
+                viewModel,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildMethodCard(
+                'Biometric',
+                Icons.fingerprint,
+                LoginMethod.biometric,
+                viewModel,
+              ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildMpinLoginCard(LoginViewModel viewModel) {
-    final isSelected = viewModel.selectedMethod == LoginMethod.mpin;
-
+  Widget _buildMethodCard(String title, IconData icon, LoginMethod method, LoginViewModel viewModel) {
+    final isSelected = viewModel.selectedMethod == method;
+    
     return GestureDetector(
-      onTap: () => viewModel.setSelectedMethod(LoginMethod.mpin),
+      onTap: () => viewModel.setLoginMethod(method),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border:
-              isSelected
-                  ? Border.all(color: const Color(0xFFFFD700), width: 2)
-                  : null,
+          color: isSelected ? const Color(0xFF1E3A8A).withOpacity(0.1) : Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected ? Border.all(color: const Color(0xFF1E3A8A), width: 2) : null,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.lock_outline,
-                  color: const Color(0xFF1E3A8A), // Brown color
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Login with mPIN',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
+            Icon(
+              icon,
+              size: 32,
+              color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey,
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Text(
-                  'Use your 4-digit secure PIN',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                ),
-                const Spacer(),
-                // PIN dots
-                Row(
-                  children: List.generate(4, (index) {
-                    final hasDigit = index < viewModel.mpin.length;
-                    return Container(
-                      width: 12,
-                      height: 12,
-                      margin: const EdgeInsets.only(left: 4),
-                      decoration: BoxDecoration(
-                        color:
-                            hasDigit
-                                ? const Color(0xFF1E3A8A)
-                                : Colors.grey.shade300,
-                        shape: BoxShape.circle,
-                      ),
-                    );
-                  }),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: TextField(
-                controller: _mpinController,
-                focusNode: _mpinFocusNode,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(4),
-                ],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 8,
-                  color: Colors.black87,
-                ),
-                decoration: const InputDecoration(
-                  hintText: '••••',
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 18,
-                    letterSpacing: 8,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
               ),
             ),
           ],
@@ -385,90 +196,82 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
     );
   }
 
-  Widget _buildBiometricLoginCard(LoginViewModel viewModel) {
-    final isSelected = viewModel.selectedMethod == LoginMethod.biometrics;
-
-    return GestureDetector(
-      onTap: () => viewModel.setSelectedMethod(LoginMethod.biometrics),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border:
-              isSelected
-                  ? Border.all(color: const Color(0xFFFFD700), width: 2)
-                  : null,
+  Widget _buildPhoneInput(LoginViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Mobile Number',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.fingerprint,
-                  color: const Color(0xFF1E3A8A), // Brown color
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Login with Biometrics',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Fingerprint option
-            Row(
-              children: [
-                const Icon(Icons.fingerprint, color: Colors.red, size: 20),
-                const SizedBox(width: 12),
-                const Text(
-                  'Fingerprint',
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
-                ),
-                const Spacer(),
-                Switch(
-                  value: viewModel.fingerprintEnabled,
-                  onChanged: viewModel.toggleFingerprint,
-                  activeColor: const Color(0xFF1E3A8A),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // Face ID option
-            Row(
-              children: [
-                Icon(Icons.face, color: const Color(0xFF1E3A8A), size: 20),
-                const SizedBox(width: 12),
-                const Text(
-                  'Face ID',
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
-                ),
-                const Spacer(),
-                Switch(
-                  value: viewModel.faceIdEnabled,
-                  onChanged: viewModel.toggleFaceId,
-                  activeColor: const Color(0xFF1E3A8A),
-                ),
-              ],
-            ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: viewModel.phoneController,
+          keyboardType: TextInputType.phone,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
           ],
+          decoration: InputDecoration(
+            hintText: 'Enter 10-digit mobile number',
+            prefixIcon: const Icon(Icons.phone, color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+            ),
+          ),
         ),
-      ),
+      ],
+    );
+  }
+
+  Widget _buildMpinInput(LoginViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'mPIN',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: viewModel.mpinController,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(6),
+          ],
+          decoration: InputDecoration(
+            hintText: 'Enter 6-digit mPIN',
+            prefixIcon: const Icon(Icons.lock, color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildErrorMessage(LoginViewModel viewModel) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
@@ -476,12 +279,15 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 20),
+          const Icon(Icons.error, color: Colors.red, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               viewModel.errorMessage,
-              style: const TextStyle(color: Colors.red, fontSize: 14),
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 14,
+              ),
             ),
           ),
         ],
@@ -492,63 +298,93 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
   Widget _buildContinueButton(LoginViewModel viewModel) {
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          viewModel.canContinue && !viewModel.isLoading
-              ? () => viewModel.handleContinue()
-              : null;
+        onPressed: viewModel.isLoading ? null : () {
+          viewModel.handleLogin().then((success) {
+            if (success) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+            }
+          });
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFFD700), // Yellow color
+          backgroundColor: const Color(0xFF1E3A8A),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 0,
         ),
-        child:
-            viewModel.isLoading
-                ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-                : const Text(
-                  'Continue',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        child: viewModel.isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
+              )
+            : const Text(
+                'Continue',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
     );
   }
 
-  Widget _buildRegisterLink() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignScreen()),
-        );
-      },
-      child: RichText(
-        text: const TextSpan(
-          style: TextStyle(color: Colors.white, fontSize: 16),
+  Widget _buildFooter() {
+    return Column(
+      children: [
+        const Text(
+          'By continuing, you agree to our',
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextSpan(text: 'Don\'t have an account? '),
-            TextSpan(
-              text: 'Register',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            GestureDetector(
+              onTap: () {
+                // Navigate to terms
+              },
+              child: const Text(
+                'Terms of Service',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF1E3A8A),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const Text(
+              ' and ',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                // Navigate to privacy policy
+              },
+              child: const Text(
+                'Privacy Policy',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF1E3A8A),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
-}
+} 
