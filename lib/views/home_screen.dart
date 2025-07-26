@@ -17,6 +17,7 @@ import 'login_screen.dart';
 import 'smart_investor_screen.dart';
 import 'tax_whisperer_screen.dart';
 import 'vyapar_margdarshak_screen.dart';
+import 'goal_planning_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -603,22 +604,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleGoalPlanningTap(HomeViewModel viewModel) {
-    // Show a placeholder dialog for Goal Planning
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Goal Planning'),
-            content: const Text(
-              'Goal Planning feature coming soon! This will include complex multi-goal planning with detailed projections, Monte Carlo simulations, and personalized pathways.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const GoalPlanningScreen(),
+      ),
     );
   }
 
