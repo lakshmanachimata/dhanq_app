@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../services/auth_service.dart';
-
 import '../models/activity_model.dart';
 import '../models/financial_service_model.dart';
+import '../services/auth_service.dart';
 import '../services/home_service.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'asset_management_screen.dart';
@@ -294,6 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
+              controller: viewModel.searchController,
               onChanged: viewModel.setSearchQuery,
               decoration: const InputDecoration(
                 hintText: 'Search for services...',
@@ -948,11 +948,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onTap: () async {
                   Navigator.pop(context);
-                  
+
                   // Clear stored data using AuthService
                   final authService = AuthService();
                   await authService.logout();
-                  
+
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => const LoginScreen(),

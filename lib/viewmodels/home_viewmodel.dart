@@ -38,6 +38,7 @@ class HomeViewModel extends ChangeNotifier {
 
   LanguageType _selectedLanguage = LanguageType.english;
   String _voiceInput = '';
+  final TextEditingController searchController = TextEditingController();
 
   // Getters
   LanguageType get selectedLanguage => _selectedLanguage;
@@ -81,6 +82,10 @@ class HomeViewModel extends ChangeNotifier {
   // Set search query
   void setSearchQuery(String query) {
     _searchQuery = query;
+    // Sync with search controller if it's different
+    if (searchController.text != query) {
+      searchController.text = query;
+    }
     notifyListeners();
   }
 
@@ -134,14 +139,32 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  void stopListening() {
+  void stopListening() async {
     _isListening = false;
     notifyListeners();
   }
 
-  void setVoiceInput(String input) {
+  Future<void> setVoiceInput(String input) async {
     _voiceInput = input;
+    setSearchQuery(input); // Update search query with voice input
+    searchController.text = input; // Set text in the search input box
+    _isListening = false; // Stop listening after input is set
     notifyListeners();
+    
+    try {
+      final mcpResp = await _voiceAssistService.processVoiceMessageFromMCP(input);
+      if (mcpResp != null && mcpResp.isNotEmpty) {
+        // Handle MCP response if needed
+        debugPrint('MCP Response: $mcpResp');
+        
+        // If the response contains an error, you might want to show it to the user
+        if (mcpResp.startsWith('Error:') || mcpResp.startsWith('Exception:')) {
+          debugPrint('MCP Error: $mcpResp');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error processing MCP request: $e');
+    }
   }
 
   // Process voice input
@@ -167,37 +190,15 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Add text message
-  Future<void> sendTextMessage(String message) async {
-    if (message.trim().isEmpty) return;
-
-    await processVoiceInput(message);
-  }
-
   // Get localized text
   String getLocalizedText(String englishText, String hindiText) {
     return _selectedLanguage == LanguageType.hindi ? hindiText : englishText;
   }
 
-  // Get greeting message
-  String getGreetingMessage() {
-    final hour = DateTime.now().hour;
-    String greeting;
-
-    if (hour < 12) {
-      greeting =
-          _selectedLanguage == LanguageType.hindi ? 'सुप्रभात' : 'Good morning';
-    } else if (hour < 17) {
-      greeting =
-          _selectedLanguage == LanguageType.hindi
-              ? 'सुधोपहर'
-              : 'Good afternoon';
-    } else {
-      greeting =
-          _selectedLanguage == LanguageType.hindi ? 'सुसंध्या' : 'Good evening';
-    }
-
-    return '$greeting, Rajan! ${_selectedLanguage == LanguageType.hindi ? 'मैं आपकी कैसे मदद कर सकता हूं?' : 'How can I help you today?'}';
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   // Handle service selection
