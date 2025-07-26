@@ -788,7 +788,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, setState) {
             return Container(
               height: MediaQuery.of(context).size.height,
-              margin: const EdgeInsets.only(top: 16),
+              margin: const EdgeInsets.only(top: 32),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
