@@ -7,6 +7,8 @@ import '../models/financial_service_model.dart';
 import '../services/home_service.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'asset_management_screen.dart';
+import 'smart_investor_screen.dart';
+import 'debt_doctor_screen.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -449,6 +451,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
         break;
+              case 'Smart Investor Agent':
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const SmartInvestorScreen(),
+            ),
+          );
+          break;
+        case 'Debt-Doctor':
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const DebtDoctorScreen(),
+            ),
+          );
+          break;
       // Add other service navigations here
       default:
         // Show a placeholder dialog for other services

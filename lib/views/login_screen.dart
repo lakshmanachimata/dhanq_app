@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import '../viewmodels/login_viewmodel.dart';
 import 'home_screen.dart';
 
@@ -12,6 +13,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -35,36 +41,36 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             const SizedBox(height: 80),
-            
+
             // Logo and Title
             _buildHeader(),
-            
+
             const SizedBox(height: 40),
-            
+
             // Login Methods
             _buildLoginMethods(viewModel),
-            
+
             const SizedBox(height: 32),
-            
+
             // Phone Number Input
             if (viewModel.selectedMethod == LoginMethod.mobile)
               _buildPhoneInput(viewModel),
-            
+
             // mPIN Input
             if (viewModel.selectedMethod == LoginMethod.mpin)
               _buildMpinInput(viewModel),
-            
+
             // Error Message
             if (viewModel.errorMessage.isNotEmpty)
               _buildErrorMessage(viewModel),
-            
+
             const SizedBox(height: 24),
-            
+
             // Continue Button
             _buildContinueButton(viewModel),
-            
+
             const Spacer(),
-            
+
             // Footer
             _buildFooter(),
           ],
@@ -106,10 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         const Text(
           'Your Financial Companion',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ],
     );
@@ -162,17 +165,28 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildMethodCard(String title, IconData icon, LoginMethod method, LoginViewModel viewModel) {
+  Widget _buildMethodCard(
+    String title,
+    IconData icon,
+    LoginMethod method,
+    LoginViewModel viewModel,
+  ) {
     final isSelected = viewModel.selectedMethod == method;
-    
+
     return GestureDetector(
       onTap: () => viewModel.setLoginMethod(method),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E3A8A).withOpacity(0.1) : Colors.grey[100],
+          color:
+              isSelected
+                  ? const Color(0xFF1E3A8A).withOpacity(0.1)
+                  : Colors.grey[100],
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? Border.all(color: const Color(0xFF1E3A8A), width: 2) : null,
+          border:
+              isSelected
+                  ? Border.all(color: const Color(0xFF1E3A8A), width: 2)
+                  : null,
         ),
         child: Column(
           children: [
@@ -219,9 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: InputDecoration(
             hintText: 'Enter 10-digit mobile number',
             prefixIcon: const Icon(Icons.phone, color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
@@ -256,9 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: InputDecoration(
             hintText: 'Enter 6-digit mPIN',
             prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
@@ -284,10 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Expanded(
             child: Text(
               viewModel.errorMessage,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.red, fontSize: 14),
             ),
           ),
         ],
@@ -300,15 +307,20 @@ class _LoginScreenState extends State<LoginScreen> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: viewModel.isLoading ? null : () {
-          viewModel.handleLogin().then((success) {
-            if (success) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
-            }
-          });
-        },
+        onPressed:
+            viewModel.isLoading
+                ? null
+                : () {
+                  viewModel.handleLogin().then((success) {
+                    if (success) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                      );
+                    }
+                  });
+                },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF1E3A8A),
           foregroundColor: Colors.white,
@@ -316,22 +328,20 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: viewModel.isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        child:
+            viewModel.isLoading
+                ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+                : const Text(
+                  'Continue',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              )
-            : const Text(
-                'Continue',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
       ),
     );
   }
@@ -341,10 +351,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         const Text(
           'By continuing, you agree to our',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.grey),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -364,10 +371,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const Text(
               ' and ',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             GestureDetector(
               onTap: () {
@@ -387,4 +391,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
-} 
+}

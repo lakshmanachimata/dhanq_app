@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/asset_viewmodel.dart';
+
 import '../models/asset_model.dart';
+import '../viewmodels/asset_viewmodel.dart';
 
 class AssetManagementScreen extends StatefulWidget {
   const AssetManagementScreen({super.key});
@@ -12,25 +13,23 @@ class AssetManagementScreen extends StatefulWidget {
 
 class _AssetManagementScreenState extends State<AssetManagementScreen> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AssetViewModel>().initializeData();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => AssetViewModel(),
-      child: Scaffold(
-        backgroundColor: Colors.grey[50],
-        body: Consumer<AssetViewModel>(
-          builder: (context, viewModel, child) {
-            return _buildBody(viewModel);
-          },
-        ),
-      ),
+      builder: (context, child) {
+        // Initialize data after provider is available
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.read<AssetViewModel>().initializeData();
+        });
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F5F5), // Light beige background
+          body: Consumer<AssetViewModel>(
+            builder: (context, viewModel, child) {
+              return _buildBody(viewModel);
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -47,19 +46,19 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
           children: [
             // Header
             _buildHeader(),
-            
+
             // Net Worth Card
             _buildNetWorthCard(viewModel),
-            
+
             // Asset Allocation Card
             _buildAssetAllocationCard(viewModel),
-            
+
             // Navigation Tabs
             _buildNavigationTabs(viewModel),
-            
+
             // Content based on selected tab
             _buildTabContent(viewModel),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -100,11 +99,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
               // Show menu options
               _showMenuOptions(context);
             },
-            child: const Icon(
-              Icons.more_vert,
-              color: Colors.black87,
-              size: 24,
-            ),
+            child: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
           ),
         ],
       ),
@@ -113,9 +108,9 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
 
   Widget _buildNetWorthCard(AssetViewModel viewModel) {
     if (viewModel.assetAllocation == null) return const SizedBox.shrink();
-    
+
     final allocation = viewModel.assetAllocation!;
-    
+
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
@@ -196,9 +191,9 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
 
   Widget _buildAssetAllocationCard(AssetViewModel viewModel) {
     if (viewModel.assetAllocation == null) return const SizedBox.shrink();
-    
+
     final allocation = viewModel.assetAllocation!;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -249,9 +244,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
   Widget _buildDonutChart(List<AssetAllocationItem> allocations) {
     return SizedBox(
       height: 120,
-      child: CustomPaint(
-        painter: DonutChartPainter(allocations),
-      ),
+      child: CustomPaint(painter: DonutChartPainter(allocations)),
     );
   }
 
@@ -278,10 +271,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
           Expanded(
             child: Text(
               item.name,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
           Text(
@@ -299,13 +289,13 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
 
   Widget _buildNavigationTabs(AssetViewModel viewModel) {
     return Container(
-      margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         children: [
           _buildTabButton('Assets', AssetTab.assets, viewModel),
-          const SizedBox(width: 20),
+          const SizedBox(width: 30),
           _buildTabButton('Liabilities', AssetTab.liabilities, viewModel),
-          const SizedBox(width: 20),
+          const SizedBox(width: 30),
           _buildTabButton('Recurring', AssetTab.recurring, viewModel),
         ],
       ),
@@ -314,7 +304,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
 
   Widget _buildTabButton(String text, AssetTab tab, AssetViewModel viewModel) {
     final isSelected = viewModel.selectedTab == tab;
-    
+
     return GestureDetector(
       onTap: () => viewModel.setSelectedTab(tab),
       child: Column(
@@ -330,10 +320,10 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
           const SizedBox(height: 8),
           if (isSelected)
             Container(
-              width: 30,
+              width: 40,
               height: 3,
               decoration: BoxDecoration(
-                color: const Color(0xFF8B4513),
+                color: const Color(0xFF8B4513), // Brown underline
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -355,9 +345,10 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
 
   Widget _buildAssetsContent(AssetViewModel viewModel) {
     return Column(
-      children: viewModel.assetCategories.map((category) => 
-        _buildAssetCategoryCard(category)
-      ).toList(),
+      children:
+          viewModel.assetCategories
+              .map((category) => _buildAssetCategoryCard(category))
+              .toList(),
     );
   }
 
@@ -410,7 +401,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
 
   Widget _buildAssetItem(AssetModel asset) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -420,6 +411,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black87,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -433,13 +425,13 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Text(
                 '(${asset.formattedChange})',
                 style: TextStyle(
                   fontSize: 12,
                   color: asset.changeColor,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -455,10 +447,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
       child: const Center(
         child: Text(
           'No liabilities found',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ),
     );
@@ -470,10 +459,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
       child: const Center(
         child: Text(
           'No recurring assets found',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ),
     );
@@ -536,14 +522,15 @@ class DonutChartPainter extends CustomPainter {
     final innerRadius = radius * 0.6;
 
     double startAngle = 0;
-    
+
     for (final allocation in allocations) {
       final sweepAngle = (allocation.percentage / 100) * 2 * 3.14159;
-      
-      final paint = Paint()
-        ..color = allocation.color
-        ..style = PaintingStyle.fill;
-      
+
+      final paint =
+          Paint()
+            ..color = allocation.color
+            ..style = PaintingStyle.fill;
+
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
@@ -551,18 +538,19 @@ class DonutChartPainter extends CustomPainter {
         true,
         paint,
       );
-      
+
       // Draw inner circle to create donut effect
-      final innerPaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.fill;
-      
+      final innerPaint =
+          Paint()
+            ..color = Colors.white
+            ..style = PaintingStyle.fill;
+
       canvas.drawCircle(center, innerRadius, innerPaint);
-      
+
       startAngle += sweepAngle;
     }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-} 
+}

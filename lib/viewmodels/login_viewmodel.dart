@@ -10,7 +10,7 @@ class LoginViewModel extends ChangeNotifier {
   LoginViewState _state = LoginViewState.initial;
   LoginMethod _selectedMethod = LoginMethod.mobile;
   
-  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController(text: '9008358358');
   final TextEditingController mpinController = TextEditingController();
   
   String _errorMessage = '';
