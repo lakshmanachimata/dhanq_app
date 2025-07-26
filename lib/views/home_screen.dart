@@ -50,8 +50,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody(HomeViewModel viewModel) {
-    if (viewModel.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    if (viewModel.isLoading || viewModel.isOnboardingLoading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(
+              color: Color(0xFF1E3A8A),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              viewModel.isOnboardingLoading 
+                ? 'Setting up your personalized experience...'
+                : 'Loading...',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF1E3A8A),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return RefreshIndicator(

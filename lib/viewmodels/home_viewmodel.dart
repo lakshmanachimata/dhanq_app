@@ -18,6 +18,7 @@ class HomeViewModel extends ChangeNotifier {
   List<ActivityModel> _recentActivities = [];
   List<FinancialServiceModel> _financialServices = [];
   bool _onboardingCompleted = false;
+  bool _isOnboardingLoading = false;
 
   // Getters
   HomeViewState get state => _state;
@@ -29,6 +30,7 @@ class HomeViewModel extends ChangeNotifier {
   List<FinancialServiceModel> get financialServices => _financialServices;
   bool get isLoading => _state == HomeViewState.loading;
   bool get onboardingCompleted => _onboardingCompleted;
+  bool get isOnboardingLoading => _isOnboardingLoading;
 
   // Initialize data
   Future<void> initializeData() async {
@@ -140,8 +142,18 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void completeOnboarding() {
+  void completeOnboarding() async {
+    _isOnboardingLoading = true;
     _onboardingCompleted = true;
+    notifyListeners();
+    
+    // Show 3-second loader
+    await Future.delayed(const Duration(seconds: 3));
+    
+    // Refresh home page data
+    await initializeData();
+    
+    _isOnboardingLoading = false;
     notifyListeners();
   }
 } 
