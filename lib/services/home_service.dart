@@ -10,7 +10,7 @@ class HomeService {
   // Get portfolio data
   Future<PortfolioModel> getPortfolioData() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     return PortfolioModel(
       totalValue: 1250000,
       todayGain: 12500,
@@ -22,7 +22,7 @@ class HomeService {
   // Get recent activities
   Future<List<ActivityModel>> getRecentActivities() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    
+
     return [
       ActivityModel(
         id: '1',
@@ -60,9 +60,11 @@ class HomeService {
   }
 
   // Get financial services based on location type
-  Future<List<FinancialServiceModel>> getFinancialServices(LocationType locationType) async {
+  Future<List<FinancialServiceModel>> getFinancialServices(
+    LocationType locationType,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    
+
     if (locationType == LocationType.urban) {
       return [
         FinancialServiceModel(
@@ -102,7 +104,7 @@ class HomeService {
         ),
         FinancialServiceModel(
           id: 'fintech_integration',
-          name: 'Integration with other FinTechs/APIs',
+          name: 'Fintech Connect',
           description: 'Connect with other financial services',
           icon: Icons.api,
           color: Colors.purple,
@@ -168,7 +170,7 @@ class HomeService {
         ),
         FinancialServiceModel(
           id: 'fintech_integration_rural',
-          name: 'Integration with other FinTechs/APIs',
+          name: 'Fintech Connect',
           description: 'Connect with other financial services',
           icon: Icons.api,
           color: Colors.brown,
@@ -186,7 +188,7 @@ class HomeService {
   // Get portfolio breakdown
   Future<Map<String, double>> getPortfolioBreakdown() async {
     await Future.delayed(const Duration(milliseconds: 200));
-    
+
     return {
       'Stocks': 40.0,
       'Mutual Funds': 30.0,

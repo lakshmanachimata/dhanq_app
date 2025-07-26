@@ -10,6 +10,8 @@ import 'asset_management_screen.dart';
 import 'smart_investor_screen.dart';
 import 'debt_doctor_screen.dart';
 import 'tax_whisperer_screen.dart';
+import 'financial_health_score_screen.dart';
+import 'integrations_screen.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -470,6 +472,20 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const TaxWhispererScreen(),
+            ),
+          );
+          break;
+        case 'Financial Health Score':
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const FinancialHealthScoreScreen(),
+            ),
+          );
+          break;
+        case 'Integration with other FinTechs/APIs':
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const IntegrationsScreen(),
             ),
           );
           break;
