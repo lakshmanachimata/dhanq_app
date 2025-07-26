@@ -162,7 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12),
                         side: const BorderSide(color: Color(0xFF1E3A8A)),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                     ),
                     onPressed: () => _showOnboardSurvey(context, viewModel),
                     child: const Text(
@@ -825,12 +828,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                            IconButton(
+                            TextButton(
                               onPressed: () => Navigator.pop(context),
-                              icon: const Icon(
-                                Icons.close,
-                                color: Color(0xFF1E3A8A),
-                                size: 24,
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFF1E3A8A),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                'Close',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ],
@@ -844,7 +860,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildSliderField(
                           label: 'Monthly Income (मासिक आय)',
                           value: monthlyIncome,
-                          onChanged: (val) => setState(() => monthlyIncome = val),
+                          onChanged:
+                              (val) => setState(() => monthlyIncome = val),
                           min: 10000,
                           max: 10000000,
                         ),
@@ -861,7 +878,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildSliderField(
                           label: 'Monthly Expense (मासिक खर्च)',
                           value: monthlyExpense,
-                          onChanged: (val) => setState(() => monthlyExpense = val),
+                          onChanged:
+                              (val) => setState(() => monthlyExpense = val),
                           min: 10000,
                           max: 10000000,
                         ),
@@ -883,7 +901,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           label: 'Finance Goals (वित्तीय लक्ष्य)',
                           options: financeGoals,
                           selectedOptions: selectedGoals,
-                          onChanged: (val) => setState(() => selectedGoals = val),
+                          onChanged:
+                              (val) => setState(() => selectedGoals = val),
                         ),
                         const SizedBox(height: 24),
                         SizedBox(
@@ -906,7 +925,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                             child: const Text(
                               'Complete Onboarding',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
@@ -923,7 +945,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSurveyField({required String label, required FormFieldSetter<String> onSaved}) {
+  Widget _buildSurveyField({
+    required String label,
+    required FormFieldSetter<String> onSaved,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -950,7 +975,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSurveyDropdown({required String label, required List<String> items, required FormFieldSetter<String> onSaved}) {
+  Widget _buildSurveyDropdown({
+    required String label,
+    required List<String> items,
+    required FormFieldSetter<String> onSaved,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: DropdownButtonFormField<String>(
@@ -972,7 +1001,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        items:
+            items
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
         onChanged: (_) {},
         onSaved: onSaved,
       ),
@@ -1026,17 +1058,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 '₹${(min / 1000).toStringAsFixed(0)}K',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               Text(
                 '₹${(max / 1000000).toStringAsFixed(0)}M',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -1072,33 +1098,41 @@ class _HomeScreenState extends State<HomeScreen> {
               border: Border.all(color: const Color(0xFF1E3A8A)),
             ),
             child: Column(
-              children: options.map((option) {
-                final isSelected = selectedOptions.contains(option);
-                return CheckboxListTile(
-                  title: Text(
-                    option,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isSelected ? const Color(0xFF1E3A8A) : Colors.black87,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    ),
-                  ),
-                  value: isSelected,
-                  onChanged: (bool? value) {
-                    final newSelection = List<String>.from(selectedOptions);
-                    if (value == true) {
-                      newSelection.add(option);
-                    } else {
-                      newSelection.remove(option);
-                    }
-                    onChanged(newSelection);
-                  },
-                  activeColor: const Color(0xFF1E3A8A),
-                  checkColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  dense: true,
-                );
-              }).toList(),
+              children:
+                  options.map((option) {
+                    final isSelected = selectedOptions.contains(option);
+                    return CheckboxListTile(
+                      title: Text(
+                        option,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color:
+                              isSelected
+                                  ? const Color(0xFF1E3A8A)
+                                  : Colors.black87,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                      value: isSelected,
+                      onChanged: (bool? value) {
+                        final newSelection = List<String>.from(selectedOptions);
+                        if (value == true) {
+                          newSelection.add(option);
+                        } else {
+                          newSelection.remove(option);
+                        }
+                        onChanged(newSelection);
+                      },
+                      activeColor: const Color(0xFF1E3A8A),
+                      checkColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
+                      dense: true,
+                    );
+                  }).toList(),
             ),
           ),
         ],
