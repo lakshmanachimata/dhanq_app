@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/debt_doctor_viewmodel.dart';
+
 import '../models/debt_doctor_model.dart';
+import '../viewmodels/debt_doctor_viewmodel.dart';
 
 class DebtDoctorScreen extends StatefulWidget {
   const DebtDoctorScreen({super.key});
@@ -23,7 +24,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
               viewModel.initializeData();
             }
           });
-          
+
           return Scaffold(
             backgroundColor: const Color(0xFFF5F5F5),
             body: _buildBody(viewModel),
@@ -68,13 +69,13 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           children: [
             // Header
             _buildHeader(),
-            
+
             // Debt Repayment Strategies Section
             _buildDebtRepaymentSection(viewModel),
-            
+
             // Credit Score Improvement Section
             _buildCreditScoreSection(viewModel),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -115,11 +116,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
               // Show menu options
               _showMenuOptions(context);
             },
-            child: const Icon(
-              Icons.more_vert,
-              color: Colors.black87,
-              size: 24,
-            ),
+            child: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
           ),
         ],
       ),
@@ -127,8 +124,8 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
   }
 
   Widget _buildDebtRepaymentSection(DebtDoctorViewModel viewModel) {
-    if (viewModel.debtOverview == null || 
-        viewModel.debtBreakdown == null || 
+    if (viewModel.debtOverview == null ||
+        viewModel.debtBreakdown == null ||
         viewModel.repaymentStrategies == null) {
       return const SizedBox.shrink();
     }
@@ -148,15 +145,15 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Debt Overview Cards
           _buildDebtOverviewCards(viewModel.debtOverview!),
           const SizedBox(height: 20),
-          
+
           // Debt Breakdown
           _buildDebtBreakdown(viewModel.debtBreakdown!),
           const SizedBox(height: 20),
-          
+
           // Repayment Strategies
           _buildRepaymentStrategies(viewModel.repaymentStrategies!, viewModel),
         ],
@@ -197,7 +194,12 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
     );
   }
 
-  Widget _buildOverviewCard(String title, String value, Color color, IconData icon) {
+  Widget _buildOverviewCard(
+    String title,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -217,13 +219,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
+          Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
           Text(
             value,
@@ -265,17 +261,16 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Horizontal bar chart
-          SizedBox(
-            height: 40,
-            child: _buildDebtBreakdownChart(breakdown),
-          ),
-          
+          SizedBox(height: 40, child: _buildDebtBreakdownChart(breakdown)),
+
           const SizedBox(height: 16),
-          
+
           // Legend
-          ...breakdown.items.map((item) => _buildDebtBreakdownLegend(item)).toList(),
+          ...breakdown.items
+              .map((item) => _buildDebtBreakdownLegend(item))
+              .toList(),
         ],
       ),
     );
@@ -305,10 +300,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           Expanded(
             child: Text(
               item.type,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
           Text(
@@ -324,7 +316,10 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
     );
   }
 
-  Widget _buildRepaymentStrategies(RepaymentStrategiesModel strategies, DebtDoctorViewModel viewModel) {
+  Widget _buildRepaymentStrategies(
+    RepaymentStrategiesModel strategies,
+    DebtDoctorViewModel viewModel,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -351,7 +346,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Strategy comparison
           Row(
             children: [
@@ -364,17 +359,14 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Payoff chart
-          SizedBox(
-            height: 120,
-            child: _buildPayoffChart(strategies),
-          ),
-          
+          SizedBox(height: 120, child: _buildPayoffChart(strategies)),
+
           const SizedBox(height: 16),
-          
+
           // Recommendation
           Container(
             padding: const EdgeInsets.all(16),
@@ -384,22 +376,19 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             ),
             child: Text(
               strategies.recommendation,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Apply button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => viewModel.applyAvalancheStrategy(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B4513),
+                backgroundColor: const Color(0xFF1E3A8A),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -408,10 +397,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
               ),
               child: const Text(
                 'Apply Avalanche Strategy',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -420,7 +406,10 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
     );
   }
 
-  Widget _buildStrategyCard(RepaymentStrategyModel strategy, DebtDoctorViewModel viewModel) {
+  Widget _buildStrategyCard(
+    RepaymentStrategyModel strategy,
+    DebtDoctorViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onRepaymentStrategyTap(strategy),
       child: Container(
@@ -444,10 +433,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             const SizedBox(height: 4),
             Text(
               strategy.description,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 8),
             Text(
@@ -524,13 +510,13 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Credit Score Display
           _buildCreditScoreDisplay(viewModel.creditScore!),
           const SizedBox(height: 20),
-          
+
           // Credit Score Factors
           _buildCreditScoreFactors(viewModel.creditScoreFactors!, viewModel),
         ],
@@ -551,7 +537,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        
+
         // Score progress bar
         Container(
           height: 20,
@@ -564,7 +550,10 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           child: Stack(
             children: [
               Positioned(
-                left: (creditScore.scorePercentage / 100) * (MediaQuery.of(context).size.width - 80) - 10,
+                left:
+                    (creditScore.scorePercentage / 100) *
+                        (MediaQuery.of(context).size.width - 80) -
+                    10,
                 top: 0,
                 child: Container(
                   width: 20,
@@ -579,9 +568,9 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Score labels
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -589,12 +578,15 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             Text('Poor', style: TextStyle(fontSize: 12, color: Colors.grey)),
             Text('Fair', style: TextStyle(fontSize: 12, color: Colors.grey)),
             Text('Good', style: TextStyle(fontSize: 12, color: Colors.grey)),
-            Text('Excellent', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              'Excellent',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Current score and potential increase
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -623,26 +615,29 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Credit score trend chart
-        SizedBox(
-          height: 80,
-          child: _buildCreditScoreTrendChart(creditScore),
-        ),
+        SizedBox(height: 80, child: _buildCreditScoreTrendChart(creditScore)),
       ],
     );
   }
 
   Widget _buildCreditScoreTrendChart(CreditScoreModel creditScore) {
     return CustomPaint(
-      painter: CreditScoreTrendPainter(creditScore.trendData, creditScore.trendLabels),
+      painter: CreditScoreTrendPainter(
+        creditScore.trendData,
+        creditScore.trendLabels,
+      ),
       size: const Size(double.infinity, 80),
     );
   }
 
-  Widget _buildCreditScoreFactors(CreditScoreFactorsModel factors, DebtDoctorViewModel viewModel) {
+  Widget _buildCreditScoreFactors(
+    CreditScoreFactorsModel factors,
+    DebtDoctorViewModel viewModel,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -655,13 +650,18 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        
-        ...factors.factors.map((factor) => _buildCreditScoreFactor(factor, viewModel)).toList(),
+
+        ...factors.factors
+            .map((factor) => _buildCreditScoreFactor(factor, viewModel))
+            .toList(),
       ],
     );
   }
 
-  Widget _buildCreditScoreFactor(CreditScoreFactor factor, DebtDoctorViewModel viewModel) {
+  Widget _buildCreditScoreFactor(
+    CreditScoreFactor factor,
+    DebtDoctorViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onCreditScoreFactorTap(factor),
       child: Container(
@@ -687,7 +687,10 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: factor.statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -709,17 +712,11 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
               children: [
                 Text(
                   'Impact: ${factor.impact}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 Text(
                   'Contribution: ${factor.formattedContribution}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -750,10 +747,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
             children: [
               const Text(
                 'Menu Options',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               ListTile(
@@ -778,6 +772,7 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 16),
             ],
           ),
         );
@@ -795,19 +790,20 @@ class DebtBreakdownChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     double currentX = 0;
-    
+
     for (final item in items) {
       final segmentWidth = (item.percentage / 100) * size.width;
-      
-      final paint = Paint()
-        ..color = item.color
-        ..style = PaintingStyle.fill;
-      
+
+      final paint =
+          Paint()
+            ..color = item.color
+            ..style = PaintingStyle.fill;
+
       canvas.drawRect(
         Rect.fromLTWH(currentX, 0, segmentWidth, size.height),
         paint,
       );
-      
+
       currentX += segmentWidth;
     }
   }
@@ -827,28 +823,30 @@ class PayoffChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final maxValue = 185000.0;
     final maxMonths = 72.0;
-    
+
     // Draw grid lines
-    final gridPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
-      ..strokeWidth = 1;
-    
+    final gridPaint =
+        Paint()
+          ..color = Colors.grey.withOpacity(0.3)
+          ..strokeWidth = 1;
+
     for (int i = 0; i <= 6; i++) {
       final y = (i / 6) * size.height;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
     }
-    
+
     // Draw avalanche line
-    final avalanchePaint = Paint()
-      ..color = avalanche.color
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-    
+    final avalanchePaint =
+        Paint()
+          ..color = avalanche.color
+          ..strokeWidth = 3
+          ..style = PaintingStyle.stroke;
+
     final avalanchePath = Path();
     for (int i = 0; i < avalanche.payoffData.length; i++) {
       final x = (i / (avalanche.payoffData.length - 1)) * size.width;
       final y = (avalanche.payoffData[i] / maxValue) * size.height;
-      
+
       if (i == 0) {
         avalanchePath.moveTo(x, y);
       } else {
@@ -856,18 +854,19 @@ class PayoffChartPainter extends CustomPainter {
       }
     }
     canvas.drawPath(avalanchePath, avalanchePaint);
-    
+
     // Draw snowball line
-    final snowballPaint = Paint()
-      ..color = snowball.color
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-    
+    final snowballPaint =
+        Paint()
+          ..color = snowball.color
+          ..strokeWidth = 3
+          ..style = PaintingStyle.stroke;
+
     final snowballPath = Path();
     for (int i = 0; i < snowball.payoffData.length; i++) {
       final x = (i / (snowball.payoffData.length - 1)) * size.width;
       final y = (snowball.payoffData[i] / maxValue) * size.height;
-      
+
       if (i == 0) {
         snowballPath.moveTo(x, y);
       } else {
@@ -892,31 +891,32 @@ class CreditScoreTrendPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (data.isEmpty) return;
 
-    final paint = Paint()
-      ..color = const Color(0xFF8B4513)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = const Color(0xFF1E3A8A)
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
     final path = Path();
-    
+
     final maxValue = data.reduce((a, b) => a > b ? a : b);
     final minValue = data.reduce((a, b) => a < b ? a : b);
     final range = maxValue - minValue;
-    
+
     for (int i = 0; i < data.length; i++) {
       final x = (i / (data.length - 1)) * size.width;
       final y = size.height - ((data[i] - minValue) / range) * size.height;
-      
+
       if (i == 0) {
         path.moveTo(x, y);
       } else {
         path.lineTo(x, y);
       }
     }
-    
+
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-} 
+}

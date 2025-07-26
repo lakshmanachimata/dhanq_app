@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/smart_investor_viewmodel.dart';
+
 import '../models/smart_investor_model.dart';
+import '../viewmodels/smart_investor_viewmodel.dart';
 
 class SmartInvestorScreen extends StatefulWidget {
   const SmartInvestorScreen({super.key});
@@ -23,7 +24,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
               viewModel.initializeData();
             }
           });
-          
+
           return Scaffold(
             backgroundColor: const Color(0xFFF5F5F5), // Light beige background
             body: _buildBody(viewModel),
@@ -46,13 +47,13 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
           children: [
             // Header
             _buildHeader(),
-            
+
             // Portfolio Management Section
             _buildPortfolioManagementSection(viewModel),
-            
+
             // Market Sentiment Analysis Section
             _buildMarketSentimentSection(viewModel),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -106,7 +107,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
 
   Widget _buildPortfolioManagementSection(SmartInvestorViewModel viewModel) {
     if (viewModel.portfolioAllocation == null) return const SizedBox.shrink();
-    
+
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
@@ -134,7 +135,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Current Allocation
           const Text(
             'Current Allocation',
@@ -145,43 +146,43 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Allocation Chart and Legend
           Row(
             children: [
               // Donut Chart
               Expanded(
                 flex: 1,
-                child: _buildAllocationChart(viewModel.portfolioAllocation!.allocationItems),
+                child: _buildAllocationChart(
+                  viewModel.portfolioAllocation!.allocationItems,
+                ),
               ),
               const SizedBox(width: 20),
               // Legend
               Expanded(
                 flex: 1,
-                child: _buildAllocationLegend(viewModel.portfolioAllocation!.allocationItems),
+                child: _buildAllocationLegend(
+                  viewModel.portfolioAllocation!.allocationItems,
+                ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Actionable Insights
-          ...viewModel.actionableInsights.map((insight) => 
-            _buildActionableInsightCard(insight, viewModel)
-          ).toList(),
+          ...viewModel.actionableInsights
+              .map((insight) => _buildActionableInsightCard(insight, viewModel))
+              .toList(),
         ],
       ),
     );
   }
 
-
-
   Widget _buildAllocationChart(List<AllocationItem> allocations) {
     return SizedBox(
       height: 100,
-      child: CustomPaint(
-        painter: AllocationChartPainter(allocations),
-      ),
+      child: CustomPaint(painter: AllocationChartPainter(allocations)),
     );
   }
 
@@ -208,10 +209,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
           Expanded(
             child: Text(
               item.name,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
           Text(
@@ -227,7 +225,10 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
     );
   }
 
-  Widget _buildActionableInsightCard(ActionableInsightModel insight, SmartInvestorViewModel viewModel) {
+  Widget _buildActionableInsightCard(
+    ActionableInsightModel insight,
+    SmartInvestorViewModel viewModel,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -250,10 +251,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
           const SizedBox(height: 8),
           Text(
             insight.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
           const SizedBox(height: 12),
           Align(
@@ -277,7 +275,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
 
   Widget _buildMarketSentimentSection(SmartInvestorViewModel viewModel) {
     if (viewModel.interestRateImpact == null) return const SizedBox.shrink();
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -305,22 +303,30 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Interest Rate Impact Card
-          _buildInterestRateImpactCard(viewModel.interestRateImpact!, viewModel),
-          
+          _buildInterestRateImpactCard(
+            viewModel.interestRateImpact!,
+            viewModel,
+          ),
+
           const SizedBox(height: 16),
-          
+
           // Market Sentiment Cards
-          ...viewModel.marketSentimentAnalysis.map((sentiment) => 
-            _buildMarketSentimentCard(sentiment, viewModel)
-          ).toList(),
+          ...viewModel.marketSentimentAnalysis
+              .map(
+                (sentiment) => _buildMarketSentimentCard(sentiment, viewModel),
+              )
+              .toList(),
         ],
       ),
     );
   }
 
-  Widget _buildInterestRateImpactCard(InterestRateImpactModel impact, SmartInvestorViewModel viewModel) {
+  Widget _buildInterestRateImpactCard(
+    InterestRateImpactModel impact,
+    SmartInvestorViewModel viewModel,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -344,33 +350,24 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
               ),
               Text(
                 impact.timeframe,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Simple line chart
-          SizedBox(
-            height: 60,
-            child: _buildLineChart(impact.chartData),
-          ),
-          
+          SizedBox(height: 60, child: _buildLineChart(impact.chartData)),
+
           const SizedBox(height: 12),
-          
+
           Text(
             impact.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
@@ -380,7 +377,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF8B4513),
+                  color: Color(0xFF1E3A8A),
                 ),
               ),
             ),
@@ -397,7 +394,10 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
     );
   }
 
-  Widget _buildMarketSentimentCard(MarketSentimentModel sentiment, SmartInvestorViewModel viewModel) {
+  Widget _buildMarketSentimentCard(
+    MarketSentimentModel sentiment,
+    SmartInvestorViewModel viewModel,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -420,10 +420,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
           const SizedBox(height: 8),
           Text(
             sentiment.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
           const SizedBox(height: 12),
           Align(
@@ -459,10 +456,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
             children: [
               const Text(
                 'Notifications',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               ListTile(
@@ -481,6 +475,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 16),
             ],
           ),
         );
@@ -502,14 +497,15 @@ class AllocationChartPainter extends CustomPainter {
     final innerRadius = radius * 0.6;
 
     double startAngle = 0;
-    
+
     for (final allocation in allocations) {
       final sweepAngle = (allocation.percentage / 100) * 2 * 3.14159;
-      
-      final paint = Paint()
-        ..color = allocation.color
-        ..style = PaintingStyle.fill;
-      
+
+      final paint =
+          Paint()
+            ..color = allocation.color
+            ..style = PaintingStyle.fill;
+
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
@@ -517,14 +513,15 @@ class AllocationChartPainter extends CustomPainter {
         true,
         paint,
       );
-      
+
       // Draw inner circle to create donut effect
-      final innerPaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.fill;
-      
+      final innerPaint =
+          Paint()
+            ..color = Colors.white
+            ..style = PaintingStyle.fill;
+
       canvas.drawCircle(center, innerRadius, innerPaint);
-      
+
       startAngle += sweepAngle;
     }
   }
@@ -543,31 +540,32 @@ class LineChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (data.isEmpty) return;
 
-    final paint = Paint()
-      ..color = const Color(0xFF8B4513)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = const Color(0xFF1E3A8A)
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
     final path = Path();
-    
+
     final maxValue = data.reduce((a, b) => a > b ? a : b);
     final minValue = data.reduce((a, b) => a < b ? a : b);
     final range = maxValue - minValue;
-    
+
     for (int i = 0; i < data.length; i++) {
       final x = (i / (data.length - 1)) * size.width;
       final y = size.height - ((data[i] - minValue) / range) * size.height;
-      
+
       if (i == 0) {
         path.moveTo(x, y);
       } else {
         path.lineTo(x, y);
       }
     }
-    
+
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-} 
+}

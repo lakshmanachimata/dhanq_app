@@ -323,7 +323,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
               width: 40,
               height: 3,
               decoration: BoxDecoration(
-                color: const Color(0xFF8B4513), // Brown underline
+                color: const Color(0xFF1E3A8A), // Brown underline
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -501,6 +501,7 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
                   // Navigate to settings
                 },
               ),
+              SizedBox(height: 16),
             ],
           ),
         );

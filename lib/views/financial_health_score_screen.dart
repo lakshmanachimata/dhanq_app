@@ -193,51 +193,36 @@ class _FinancialHealthScoreScreenState
   }
 
   Widget _buildScoreDial(FinancialHealthScoreModel healthScore) {
-    return SizedBox(
-      height: 120,
-      width: 120,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Background circle
-          SizedBox(
-            height: 120,
-            width: 120,
-            child: CircularProgressIndicator(
-              value: 1.0,
-              strokeWidth: 12,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.grey[300]!),
-            ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Progress circle with segmented colors
+        SizedBox(
+          height: 120,
+          width: 120,
+          child: CustomPaint(
+            painter: SegmentedScoreDialPainter(healthScore.scorePercentage),
           ),
-          // Progress circle with segmented colors
-          SizedBox(
-            height: 120,
-            width: 120,
-            child: CustomPaint(
-              painter: SegmentedScoreDialPainter(healthScore.scorePercentage),
-            ),
-          ),
-          // Score text
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                healthScore.formattedScore,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+        ),
+        // Score text
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              healthScore.formattedScore,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-              Text(
-                healthScore.formattedMaxScore,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+            Text(
+              healthScore.formattedMaxScore,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -308,7 +293,7 @@ class _FinancialHealthScoreScreenState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(metric.icon, color: const Color(0xFF8B4513), size: 24),
+                Icon(metric.icon, color: const Color(0xFF1E3A8A), size: 24),
                 if (metric.status != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -323,7 +308,7 @@ class _FinancialHealthScoreScreenState
                       metric.status!,
                       style: const TextStyle(
                         fontSize: 10,
-                        color: Color(0xFF8B4513),
+                        color: Color(0xFF1E3A8A),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

@@ -14,7 +14,7 @@ class PortfolioAllocationModel {
   });
 
   List<AllocationItem> get allocationItems => [
-    AllocationItem(name: 'Equity', percentage: equity, color: const Color(0xFF8B4513)),
+    AllocationItem(name: 'Equity', percentage: equity, color: const Color(0xFF1E3A8A)),
     AllocationItem(name: 'Debt', percentage: debt, color: const Color(0xFFFFD700)),
     AllocationItem(name: 'Gold', percentage: gold, color: const Color(0xFFFFB6C1)),
     AllocationItem(name: 'Cash', percentage: cash, color: const Color(0xFFDEB887)),
@@ -47,7 +47,7 @@ class ActionableInsightModel {
     required this.title,
     required this.description,
     required this.actionText,
-    this.accentColor = const Color(0xFF8B4513),
+    this.accentColor = const Color(0xFF1E3A8A),
   });
 }
 
@@ -67,7 +67,7 @@ class MarketSentimentModel {
     required this.actionText,
     this.timeframe,
     this.chartData,
-    this.accentColor = const Color(0xFF8B4513),
+    this.accentColor = const Color(0xFF1E3A8A),
   });
 }
 

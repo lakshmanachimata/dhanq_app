@@ -7,12 +7,12 @@ import '../models/financial_service_model.dart';
 import '../services/home_service.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'asset_management_screen.dart';
-import 'smart_investor_screen.dart';
 import 'debt_doctor_screen.dart';
-import 'tax_whisperer_screen.dart';
 import 'financial_health_score_screen.dart';
 import 'integrations_screen.dart';
 import 'login_screen.dart';
+import 'smart_investor_screen.dart';
+import 'tax_whisperer_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
               viewModel.initializeData();
             }
           });
-          
+
           return Scaffold(
             backgroundColor: Colors.grey[50],
             body: _buildBody(viewModel),
@@ -58,19 +58,19 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Header
             _buildHeader(viewModel),
-            
+
             // Search Bar
             _buildSearchBar(viewModel),
-            
+
             // Portfolio Section
             _buildPortfolioSection(viewModel),
-            
+
             // Financial Services Section
             _buildFinancialServicesSection(viewModel),
-            
+
             // Recent Activity Section
             _buildRecentActivitySection(viewModel),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -149,16 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Row(
         children: [
-          _buildSegmentButton(
-            'Urban',
-            LocationType.urban,
-            viewModel,
-          ),
-          _buildSegmentButton(
-            'Rural',
-            LocationType.rural,
-            viewModel,
-          ),
+          _buildSegmentButton('Urban', LocationType.urban, viewModel),
+          _buildSegmentButton('Rural', LocationType.rural, viewModel),
         ],
       ),
     );
@@ -170,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeViewModel viewModel,
   ) {
     final isSelected = viewModel.locationType == type;
-    
+
     return Expanded(
       child: GestureDetector(
         onTap: () => viewModel.setLocationType(type),
@@ -240,9 +232,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPortfolioSection(HomeViewModel viewModel) {
     if (viewModel.portfolioData == null) return const SizedBox.shrink();
-    
+
     final portfolio = viewModel.portfolioData!;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -371,10 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: viewModel.financialServices.length,
             itemBuilder: (context, index) {
               final service = viewModel.financialServices[index];
-              return _buildServiceCard(
-                service,
-                viewModel,
-              );
+              return _buildServiceCard(service, viewModel);
             },
           ),
         ],
@@ -387,10 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeViewModel viewModel,
   ) {
     return GestureDetector(
-      onTap: () => _handleServiceTap(
-        service,
-        viewModel,
-      ),
+      onTap: () => _handleServiceTap(service, viewModel),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -444,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeViewModel viewModel,
   ) {
     viewModel.onServiceSelected(service);
-    
+
     // Navigate to specific screens based on service
     switch (service.name) {
       case 'Asset Management':
@@ -454,41 +440,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
         break;
-              case 'Smart Investor Agent':
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const SmartInvestorScreen(),
-            ),
-          );
-          break;
-        case 'Debt-Doctor':
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const DebtDoctorScreen(),
-            ),
-          );
-          break;
-        case 'Tax Whisperer':
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const TaxWhispererScreen(),
-            ),
-          );
-          break;
-        case 'Financial Health Score':
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const FinancialHealthScoreScreen(),
-            ),
-          );
-          break;
-        case 'Integration with other FinTechs/APIs':
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const IntegrationsScreen(),
-            ),
-          );
-          break;
+      case 'Smart Investor Agent':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SmartInvestorScreen()),
+        );
+        break;
+      case 'Debt-Doctor':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const DebtDoctorScreen()),
+        );
+        break;
+      case 'Tax Whisperer':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const TaxWhispererScreen()),
+        );
+        break;
+      case 'Financial Health Score':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const FinancialHealthScoreScreen(),
+          ),
+        );
+        break;
+      case 'Fintech Connect':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const IntegrationsScreen()),
+        );
+        break;
       // Add other service navigations here
       default:
         // Show a placeholder dialog for other services
@@ -496,15 +474,15 @@ class _HomeScreenState extends State<HomeScreen> {
           context: context,
           builder:
               (context) => AlertDialog(
-            title: Text(service.name),
-            content: Text('${service.name} feature coming soon!'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
+                title: Text(service.name),
+                content: Text('${service.name} feature coming soon!'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
     }
   }

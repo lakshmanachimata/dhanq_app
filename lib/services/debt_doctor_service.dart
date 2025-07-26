@@ -43,7 +43,7 @@ class DebtDoctorService {
         DebtBreakdownItem(
           type: 'Personal Loans',
           amount: 1500,
-          color: const Color(0xFF8B4513),
+          color: const Color(0xFF1E3A8A),
           percentage: 0.8,
         ),
       ],
@@ -66,7 +66,7 @@ class DebtDoctorService {
         description: 'Pay smallest debts first',
         interest: 32400,
         payoffTime: 68,
-        color: const Color(0xFF8B4513),
+        color: const Color(0xFF1E3A8A),
         payoffData: [185000, 172000, 159000, 146000, 133000, 120000, 107000, 94000, 81000, 68000, 55000, 42000, 29000, 16000, 3000, 0],
       ),
       recommendation: 'The Avalanche method saves you \$3,800 in interest and pays off debt 4 months faster.',

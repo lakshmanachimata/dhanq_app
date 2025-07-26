@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/integrations_viewmodel.dart';
+
 import '../models/integrations_model.dart';
+import '../viewmodels/integrations_viewmodel.dart';
 
 class IntegrationsScreen extends StatefulWidget {
   const IntegrationsScreen({super.key});
@@ -23,7 +24,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               viewModel.initializeData();
             }
           });
-          
+
           return Scaffold(
             backgroundColor: const Color(0xFFF5F5F5),
             body: _buildBody(viewModel),
@@ -68,22 +69,22 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
           children: [
             // Header
             _buildHeader(),
-            
+
             // Recommended for You Section
             _buildRecommendedSection(viewModel),
-            
+
             // Connected Services Section
             _buildConnectedServicesSection(viewModel),
-            
+
             // Available Integrations Section
             _buildAvailableIntegrationsSection(viewModel),
-            
+
             // Data Sharing Permissions Section
             _buildDataPermissionsSection(viewModel),
-            
+
             // Integration Settings Section
             _buildIntegrationSettingsSection(viewModel),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -118,20 +119,60 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               ),
             ),
           ),
-          // Search button
+          // Menu button
           GestureDetector(
             onTap: () {
-              // Show search functionality
-              _showSearchDialog(context);
+              // Show menu options
+              _showMenuOptions(context);
             },
-            child: const Icon(
-              Icons.search,
-              color: Colors.black87,
-              size: 24,
-            ),
+            child: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
           ),
         ],
       ),
+    );
+  }
+
+  void _showMenuOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.refresh),
+                title: const Text('Refresh Data'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.read<IntegrationsViewModel>().refreshData();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.download),
+                title: const Text('Export Report'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Implement export functionality
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navigate to settings
+                },
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -152,10 +193,10 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Horizontal scrollable list
           SizedBox(
-            height: 140,
+            height: 170,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: viewModel.recommendedServices.length,
@@ -172,11 +213,14 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
     );
   }
 
-  Widget _buildRecommendedServiceCard(IntegrationServiceModel service, IntegrationsViewModel viewModel) {
+  Widget _buildRecommendedServiceCard(
+    IntegrationServiceModel service,
+    IntegrationsViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onRecommendedServiceTap(service),
       child: Container(
-        width: 160,
+        width: 150,
         margin: const EdgeInsets.only(right: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -194,38 +238,40 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0E6D2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                service.icon,
-                color: const Color(0xFF8B4513),
-                size: 20,
-              ),
+            // Icon and service name in a row
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0E6D2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    service.icon,
+                    color: const Color(0xFF1E3A8A),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    service.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            // Service name
-            Text(
-              service.name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             // Description
             Text(
               service.description,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const Spacer(),
             // Connect button
@@ -234,7 +280,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               child: ElevatedButton(
                 onPressed: () => viewModel.connectService(service.name),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B4513),
+                  backgroundColor: const Color(0xFF1E3A8A),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -243,10 +289,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                 ),
                 child: const Text(
                   'Connect',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -273,14 +316,14 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Connected services list
-          ...viewModel.connectedServices.map((service) => 
-            _buildConnectedServiceCard(service, viewModel)
-          ).toList(),
-          
+          ...viewModel.connectedServices
+              .map((service) => _buildConnectedServiceCard(service, viewModel))
+              .toList(),
+
           const SizedBox(height: 16),
-          
+
           // Connect new service button
           Container(
             width: double.infinity,
@@ -296,18 +339,14 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.add,
-                  color: Color(0xFF8B4513),
-                  size: 20,
-                ),
+                const Icon(Icons.add, color: Color(0xFF1E3A8A), size: 20),
                 const SizedBox(width: 8),
                 const Text(
                   'Connect a New Service',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF8B4513),
+                    color: Color(0xFF1E3A8A),
                   ),
                 ),
               ],
@@ -318,7 +357,10 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
     );
   }
 
-  Widget _buildConnectedServiceCard(IntegrationServiceModel service, IntegrationsViewModel viewModel) {
+  Widget _buildConnectedServiceCard(
+    IntegrationServiceModel service,
+    IntegrationsViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onConnectedServiceTap(service),
       child: Container(
@@ -348,7 +390,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               ),
               child: Icon(
                 service.icon,
-                color: const Color(0xFF8B4513),
+                color: const Color(0xFF1E3A8A),
                 size: 20,
               ),
             ),
@@ -389,10 +431,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                     const SizedBox(height: 4),
                     Text(
                       'Last sync: ${service.lastSync}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ],
@@ -408,7 +447,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                   viewModel.disconnectService(service.name);
                 }
               },
-              activeColor: const Color(0xFF8B4513),
+              activeColor: const Color(0xFF1E3A8A),
             ),
           ],
         ),
@@ -433,16 +472,19 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
-          ...viewModel.availableIntegrations.map((category) => 
-            _buildIntegrationCategory(category, viewModel)
-          ).toList(),
+
+          ...viewModel.availableIntegrations
+              .map((category) => _buildIntegrationCategory(category, viewModel))
+              .toList(),
         ],
       ),
     );
   }
 
-  Widget _buildIntegrationCategory(IntegrationCategoryModel category, IntegrationsViewModel viewModel) {
+  Widget _buildIntegrationCategory(
+    IntegrationCategoryModel category,
+    IntegrationsViewModel viewModel,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -460,7 +502,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                 ),
                 child: Icon(
                   category.icon,
-                  color: const Color(0xFF8B4513),
+                  color: const Color(0xFF1E3A8A),
                   size: 18,
                 ),
               ),
@@ -476,17 +518,20 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Services in category
-          ...category.services.map((service) => 
-            _buildAvailableServiceCard(service, viewModel)
-          ).toList(),
+          ...category.services
+              .map((service) => _buildAvailableServiceCard(service, viewModel))
+              .toList(),
         ],
       ),
     );
   }
 
-  Widget _buildAvailableServiceCard(IntegrationServiceModel service, IntegrationsViewModel viewModel) {
+  Widget _buildAvailableServiceCard(
+    IntegrationServiceModel service,
+    IntegrationsViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onAvailableServiceTap(service),
       child: Container(
@@ -516,7 +561,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               ),
               child: Icon(
                 service.icon,
-                color: const Color(0xFF8B4513),
+                color: const Color(0xFF1E3A8A),
                 size: 20,
               ),
             ),
@@ -537,10 +582,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                   const SizedBox(height: 4),
                   Text(
                     service.description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
@@ -549,19 +591,19 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             ElevatedButton(
               onPressed: () => viewModel.connectService(service.name),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B4513),
+                backgroundColor: const Color(0xFF1E3A8A),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: const Text(
                 'Connect',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -611,26 +653,27 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
-                    Icons.info,
-                    size: 14,
-                    color: Colors.grey,
-                  ),
+                  child: const Icon(Icons.info, size: 14, color: Colors.grey),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
-          ...viewModel.dataPermissions.map((permission) => 
-            _buildDataPermissionCard(permission, viewModel)
-          ).toList(),
+
+          ...viewModel.dataPermissions
+              .map(
+                (permission) => _buildDataPermissionCard(permission, viewModel),
+              )
+              .toList(),
         ],
       ),
     );
   }
 
-  Widget _buildDataPermissionCard(DataPermissionModel permission, IntegrationsViewModel viewModel) {
+  Widget _buildDataPermissionCard(
+    DataPermissionModel permission,
+    IntegrationsViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onDataPermissionTap(permission),
       child: Container(
@@ -650,7 +693,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                   ),
                   child: Icon(
                     permission.icon,
-                    color: const Color(0xFF8B4513),
+                    color: const Color(0xFF1E3A8A),
                     size: 18,
                   ),
                 ),
@@ -673,10 +716,10 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Permissions list
-            ...permission.permissions.map((item) => 
-              Padding(
+            ...permission.permissions.map(
+              (item) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -697,20 +740,17 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                           value,
                         );
                       },
-                      activeColor: const Color(0xFF8B4513),
+                      activeColor: const Color(0xFF1E3A8A),
                     ),
                   ],
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 8),
             Text(
               'Last accessed: ${permission.lastAccessed}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
@@ -748,16 +788,19 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
-          ...viewModel.integrationSettings.map((setting) => 
-            _buildSettingCard(setting, viewModel)
-          ).toList(),
+
+          ...viewModel.integrationSettings
+              .map((setting) => _buildSettingCard(setting, viewModel))
+              .toList(),
         ],
       ),
     );
   }
 
-  Widget _buildSettingCard(IntegrationSettingModel setting, IntegrationsViewModel viewModel) {
+  Widget _buildSettingCard(
+    IntegrationSettingModel setting,
+    IntegrationsViewModel viewModel,
+  ) {
     return GestureDetector(
       onTap: () => viewModel.onSettingTap(setting),
       child: Padding(
@@ -780,10 +823,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                   const SizedBox(height: 4),
                   Text(
                     setting.description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
@@ -793,7 +833,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               onChanged: (value) {
                 viewModel.updateSetting(setting.name, value);
               },
-              activeColor: const Color(0xFF8B4513),
+              activeColor: const Color(0xFF1E3A8A),
             ),
           ],
         ),
@@ -840,4 +880,4 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
       },
     );
   }
-} 
+}

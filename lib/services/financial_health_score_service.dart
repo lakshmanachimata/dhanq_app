@@ -85,17 +85,17 @@ class FinancialHealthScoreService {
       FinancialInsightModel(
         text: 'Increase emergency fund to 6 months of expenses',
         icon: Icons.savings,
-        iconColor: const Color(0xFF8B4513),
+        iconColor: const Color(0xFF1E3A8A),
       ),
       FinancialInsightModel(
         text: 'Consider diversifying investment portfolio',
         icon: Icons.trending_up,
-        iconColor: const Color(0xFF8B4513),
+        iconColor: const Color(0xFF1E3A8A),
       ),
       FinancialInsightModel(
         text: 'Maintain current debt repayment strategy',
         icon: Icons.description,
-        iconColor: const Color(0xFF8B4513),
+        iconColor: const Color(0xFF1E3A8A),
       ),
     ];
   }
