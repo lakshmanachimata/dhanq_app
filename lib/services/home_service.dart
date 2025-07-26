@@ -1,11 +1,12 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/activity_model.dart';
 import '../models/financial_service_model.dart';
-import '../models/portfolio_model.dart';
 import '../models/home_data_model.dart';
+import '../models/portfolio_model.dart';
 
 enum LocationType { urban, rural }
 
@@ -14,9 +15,16 @@ class HomeService {
   Future<HomeDataModel> getHomeData() async {
     try {
       // Load JSON file from assets
-      final jsonString = await rootBundle.loadString('assets/sample_home_data.json');
+      // final jsonString = await rootBundle.loadString('assets/sample_home_data.json');
+      // load json from below url using http package
+      final response = await http.get(
+        Uri.parse(
+          'https://dhanqserv-43683479109.us-central1.run.app/api/portfolio/12345',
+        ),
+      );
+      final jsonString = response.body;
       final jsonData = json.decode(jsonString);
-      return HomeDataModel.fromJson(jsonData);
+      return HomeDataModel.fromJson(jsonData['portfolio']);
     } catch (e) {
       // Fallback to mock data if asset loading fails
       return await _loadLocalData();
@@ -26,7 +34,7 @@ class HomeService {
   // Load data from local JSON file as fallback
   Future<HomeDataModel> _loadLocalData() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     // For now, return mock data structure that matches JSON
     return HomeDataModel(
       portfolio: PortfolioModel(
@@ -122,7 +130,8 @@ class HomeService {
           FinancialServiceModel(
             id: 'goal_planning',
             name: 'Goal Planning',
-            description: 'Complex multi-goal planning with detailed projections',
+            description:
+                'Complex multi-goal planning with detailed projections',
             icon: Icons.track_changes,
             color: Colors.indigo,
             category: 'urban',

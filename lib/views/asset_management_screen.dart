@@ -340,6 +340,8 @@ class _AssetManagementScreenState extends State<AssetManagementScreen> {
         return _buildLiabilitiesContent(viewModel);
       case AssetTab.recurring:
         return _buildRecurringContent(viewModel);
+      case AssetTab.overview:
+        return const SizedBox.shrink();
     }
   }
 

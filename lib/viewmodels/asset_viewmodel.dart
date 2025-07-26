@@ -1,70 +1,106 @@
 import 'package:flutter/material.dart';
+
 import '../models/asset_model.dart';
+import '../models/portfolio_model.dart';
 import '../services/asset_service.dart';
 
-enum AssetViewState { initial, loading, success, error }
-enum AssetTab { assets, liabilities, recurring }
+enum AssetViewState { initial, loading, loaded, error }
+
+enum AssetTab { overview, assets, liabilities, recurring }
 
 class AssetViewModel extends ChangeNotifier {
-  final AssetService _assetService = AssetService();
-  
+  final AssetService _service = AssetService();
+
   AssetViewState _state = AssetViewState.initial;
-  AssetTab _selectedTab = AssetTab.assets;
-  
-  AssetAllocationModel? _assetAllocation;
-  List<AssetCategoryModel> _assetCategories = [];
-  List<AssetModel> _liabilities = [];
-  List<AssetModel> _recurringAssets = [];
+  AssetManagementModel? _assetData;
+  String? _errorMessage;
+  AssetTab _selectedTab = AssetTab.overview;
 
   // Getters
   AssetViewState get state => _state;
-  AssetTab get selectedTab => _selectedTab;
-  AssetAllocationModel? get assetAllocation => _assetAllocation;
-  List<AssetCategoryModel> get assetCategories => _assetCategories;
-  List<AssetModel> get liabilities => _liabilities;
-  List<AssetModel> get recurringAssets => _recurringAssets;
+  AssetManagementModel? get assetData => _assetData;
+  String? get errorMessage => _errorMessage;
   bool get isLoading => _state == AssetViewState.loading;
+  AssetTab get selectedTab => _selectedTab;
 
-  // Initialize data
-  Future<void> initializeData() async {
-    _setState(AssetViewState.loading);
+  // Legacy getters for backward compatibility
+  PortfolioModel? get portfolioData => _assetData?.portfolio;
+  List<AssetModel> get assets => _assetData?.assets ?? [];
+  Map<String, double> get allocation => _assetData?.allocation ?? {};
+  List<TransactionModel> get recentTransactions => _assetData?.recentTransactions ?? [];
+  PerformanceModel? get performance => _assetData?.performance;
+  List<InsightModel> get insights => _assetData?.insights ?? [];
+
+  // Additional getters for UI compatibility
+  AssetAllocationModel? get assetAllocation {
+    if (_assetData == null) return null;
+    return AssetAllocationModel(
+      totalNetWorth: _assetData!.portfolio.totalValue,
+      ytdChange: _assetData!.portfolio.gainPercentage,
+      allocations: _assetData!.allocation.entries.map((entry) => 
+        AssetAllocationItem(
+          name: entry.key,
+          percentage: entry.value,
+          value: _assetData!.portfolio.totalValue * entry.value / 100,
+          color: _getColorForAssetType(entry.key),
+        )
+      ).toList(),
+    );
+  }
+
+  List<AssetCategoryModel> get assetCategories {
+    if (_assetData == null) return [];
     
-    try {
-      await Future.wait([
-        _loadAssetAllocation(),
-        _loadAssetCategories(),
-        _loadLiabilities(),
-        _loadRecurringAssets(),
-      ]);
-      
-      _setState(AssetViewState.success);
-    } catch (e) {
-      _setState(AssetViewState.error);
+    // Group assets by type
+    final Map<String, List<AssetModel>> groupedAssets = {};
+    for (final asset in _assetData!.assets) {
+      groupedAssets.putIfAbsent(asset.type, () => []).add(asset);
+    }
+    
+    return groupedAssets.entries.map((entry) => 
+      AssetCategoryModel(
+        name: entry.key,
+        totalValue: entry.value.fold(0.0, (sum, asset) => sum + asset.value),
+        assets: entry.value,
+      )
+    ).toList();
+  }
+
+  List<AssetModel> get liabilities => []; // Placeholder for future implementation
+  List<AssetModel> get recurringAssets => []; // Placeholder for future implementation
+
+  // Helper method to get color for asset type
+  Color _getColorForAssetType(String type) {
+    switch (type) {
+      case 'Stocks':
+        return Colors.orange;
+      case 'Mutual Funds':
+        return Colors.blue;
+      case 'Fixed Deposits':
+        return Colors.green;
+      case 'Cash':
+        return Colors.grey;
+      default:
+        return Colors.purple;
     }
   }
 
-  // Load asset allocation
-  Future<void> _loadAssetAllocation() async {
-    _assetAllocation = await _assetService.getAssetAllocation();
-    notifyListeners();
-  }
+  // Initialize data
+  Future<void> initializeData() async {
+    if (_state == AssetViewState.initial) {
+      _state = AssetViewState.loading;
+      notifyListeners();
 
-  // Load asset categories
-  Future<void> _loadAssetCategories() async {
-    _assetCategories = await _assetService.getAssetsByCategory();
-    notifyListeners();
-  }
+      try {
+        _assetData = await _service.getAssetManagementData();
+        _state = AssetViewState.loaded;
+      } catch (e) {
+        _errorMessage = e.toString();
+        _state = AssetViewState.error;
+      }
 
-  // Load liabilities
-  Future<void> _loadLiabilities() async {
-    _liabilities = await _assetService.getLiabilities();
-    notifyListeners();
-  }
-
-  // Load recurring assets
-  Future<void> _loadRecurringAssets() async {
-    _recurringAssets = await _assetService.getRecurringAssets();
-    notifyListeners();
+      notifyListeners();
+    }
   }
 
   // Set selected tab
@@ -75,36 +111,17 @@ class AssetViewModel extends ChangeNotifier {
 
   // Refresh data
   Future<void> refreshData() async {
-    await initializeData();
-  }
+    _state = AssetViewState.loading;
+    notifyListeners();
 
-  // Set state
-  void _setState(AssetViewState state) {
-    _state = state;
+    try {
+      _assetData = await _service.getAssetManagementData();
+      _state = AssetViewState.loaded;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _state = AssetViewState.error;
+    }
+
     notifyListeners();
   }
-
-  // Get current tab data
-  List<dynamic> get currentTabData {
-    switch (_selectedTab) {
-      case AssetTab.assets:
-        return _assetCategories;
-      case AssetTab.liabilities:
-        return _liabilities;
-      case AssetTab.recurring:
-        return _recurringAssets;
-    }
-  }
-
-  // Get tab title
-  String get tabTitle {
-    switch (_selectedTab) {
-      case AssetTab.assets:
-        return 'Assets';
-      case AssetTab.liabilities:
-        return 'Liabilities';
-      case AssetTab.recurring:
-        return 'Recurring';
-    }
-  }
-} 
+}
