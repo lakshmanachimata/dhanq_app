@@ -149,6 +149,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+              // Onboard Button (only if not completed)
+              if (!viewModel.onboardingCompleted)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF1E3A8A),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: const BorderSide(color: Color(0xFF1E3A8A)),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                    onPressed: () => _showOnboardSurvey(context, viewModel),
+                    child: const Text(
+                      'Onboard',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
               // Profile Button
               GestureDetector(
                 onTap: () => _showProfileSheet(context),
@@ -724,6 +749,360 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+
+  void _showOnboardSurvey(BuildContext context, HomeViewModel viewModel) {
+    final _formKey = GlobalKey<FormState>();
+    double monthlyIncome = 50000;
+    String? placeOfStay;
+    String? languagePref;
+    double monthlyExpense = 30000;
+    double bankBalance = 100000;
+    double loans = 0;
+    List<String> selectedGoals = [];
+
+    final List<String> financeGoals = [
+      'Loan free in 2 years',
+      'New business after 3 years',
+      'Buy car in 3 years',
+      'Buy house in 5 years',
+      'Financial freedom in 5 years',
+      'Clear Student loan in 4 years',
+      'Earn on investment',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              margin: const EdgeInsets.only(top: 16),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RichText(
+                                text: const TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Welcome to Dhan',
+                                      style: TextStyle(
+                                        color: Color(0xFF1E3A8A),
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: 'Q!',
+                                      style: TextStyle(
+                                        color: Color(0xFFEB5D37),
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(
+                                Icons.close,
+                                color: Color(0xFF1E3A8A),
+                                size: 24,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'We\'d love to learn more about your financial journey. This will help us tailor our services to your needs.',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildSliderField(
+                          label: 'Monthly Income (मासिक आय)',
+                          value: monthlyIncome,
+                          onChanged: (val) => setState(() => monthlyIncome = val),
+                          min: 10000,
+                          max: 10000000,
+                        ),
+                        _buildSurveyDropdown(
+                          label: 'Place of Stay (शहर/गाँव)',
+                          items: const ['City (शहर)', 'Village (गाँव)'],
+                          onSaved: (val) => placeOfStay = val,
+                        ),
+                        _buildSurveyDropdown(
+                          label: 'Language Preference (भाषा पसंद)',
+                          items: const ['Hindi', 'Telugu', 'Tamil', 'Kannada'],
+                          onSaved: (val) => languagePref = val,
+                        ),
+                        _buildSliderField(
+                          label: 'Monthly Expense (मासिक खर्च)',
+                          value: monthlyExpense,
+                          onChanged: (val) => setState(() => monthlyExpense = val),
+                          min: 10000,
+                          max: 10000000,
+                        ),
+                        _buildSliderField(
+                          label: 'Bank Balance (बैंक बैलेंस)',
+                          value: bankBalance,
+                          onChanged: (val) => setState(() => bankBalance = val),
+                          min: 10000,
+                          max: 10000000,
+                        ),
+                        _buildSliderField(
+                          label: 'Loans (ऋण)',
+                          value: loans,
+                          onChanged: (val) => setState(() => loans = val),
+                          min: 0,
+                          max: 10000000,
+                        ),
+                        _buildMultiSelectField(
+                          label: 'Finance Goals (वित्तीय लक्ष्य)',
+                          options: financeGoals,
+                          selectedOptions: selectedGoals,
+                          onChanged: (val) => setState(() => selectedGoals = val),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1E3A8A),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                viewModel.completeOnboarding();
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text(
+                              'Complete Onboarding',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSurveyField({required String label, required FormFieldSetter<String> onSaved}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1E3A8A)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1E3A8A)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+          ),
+        ),
+        validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+        onSaved: onSaved,
+      ),
+    );
+  }
+
+  Widget _buildSurveyDropdown({required String label, required List<String> items, required FormFieldSetter<String> onSaved}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1E3A8A)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1E3A8A)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+          ),
+        ),
+        validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        onChanged: (_) {},
+        onSaved: onSaved,
+      ),
+    );
+  }
+
+  Widget _buildSliderField({
+    required String label,
+    required double value,
+    required ValueChanged<double> onChanged,
+    required double min,
+    required double max,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E3A8A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF1E3A8A),
+              inactiveTrackColor: Colors.grey[300],
+              thumbColor: const Color(0xFF1E3A8A),
+              overlayColor: const Color(0xFF1E3A8A).withOpacity(0.2),
+              valueIndicatorColor: const Color(0xFF1E3A8A),
+              valueIndicatorTextStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: 99,
+              label: '₹${(value / 1000).toStringAsFixed(0)}K',
+              onChanged: onChanged,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '₹${(min / 1000).toStringAsFixed(0)}K',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+              Text(
+                '₹${(max / 1000000).toStringAsFixed(0)}M',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMultiSelectField({
+    required String label,
+    required List<String> options,
+    required List<String> selectedOptions,
+    required ValueChanged<List<String>> onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E3A8A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF1E3A8A)),
+            ),
+            child: Column(
+              children: options.map((option) {
+                final isSelected = selectedOptions.contains(option);
+                return CheckboxListTile(
+                  title: Text(
+                    option,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isSelected ? const Color(0xFF1E3A8A) : Colors.black87,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                  value: isSelected,
+                  onChanged: (bool? value) {
+                    final newSelection = List<String>.from(selectedOptions);
+                    if (value == true) {
+                      newSelection.add(option);
+                    } else {
+                      newSelection.remove(option);
+                    }
+                    onChanged(newSelection);
+                  },
+                  activeColor: const Color(0xFF1E3A8A),
+                  checkColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  dense: true,
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

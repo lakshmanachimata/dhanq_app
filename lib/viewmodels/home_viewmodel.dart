@@ -17,6 +17,7 @@ class HomeViewModel extends ChangeNotifier {
   PortfolioModel? _portfolioData;
   List<ActivityModel> _recentActivities = [];
   List<FinancialServiceModel> _financialServices = [];
+  bool _onboardingCompleted = false;
 
   // Getters
   HomeViewState get state => _state;
@@ -27,6 +28,7 @@ class HomeViewModel extends ChangeNotifier {
   List<ActivityModel> get recentActivities => _recentActivities;
   List<FinancialServiceModel> get financialServices => _financialServices;
   bool get isLoading => _state == HomeViewState.loading;
+  bool get onboardingCompleted => _onboardingCompleted;
 
   // Initialize data
   Future<void> initializeData() async {
@@ -135,6 +137,11 @@ class HomeViewModel extends ChangeNotifier {
   void clearSearch() {
     _searchQuery = '';
     _voiceResponse = '';
+    notifyListeners();
+  }
+
+  void completeOnboarding() {
+    _onboardingCompleted = true;
     notifyListeners();
   }
 } 
