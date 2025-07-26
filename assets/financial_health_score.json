@@ -16,7 +16,7 @@
   "keyMetrics": [
     {
       "label": "Emergency Fund",
-      "value": "$15,200",
+              "value": "₹15,200",
       "trend": "+12%",
       "isPositiveTrend": true,
       "icon": {
@@ -55,7 +55,7 @@
     },
     {
       "label": "Investment Growth",
-      "value": "$8,450",
+              "value": "₹8,450",
       "trend": "+8.5%",
       "isPositiveTrend": true,
       "icon": {
@@ -346,7 +346,7 @@
       "priority": "Low",
       "category": "Emergency Fund",
       "title": "Increase Emergency Fund",
-      "description": "Add $2,800 to reach 8 months of expenses coverage",
+              "description": "Add ₹2,800 to reach 8 months of expenses coverage",
       "estimatedCost": 2800.0,
       "potentialBenefit": "Enhanced financial security",
       "actionText": "Set Goal",

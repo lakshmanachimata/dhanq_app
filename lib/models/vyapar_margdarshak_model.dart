@@ -80,7 +80,7 @@ class GrowthMetricModel {
 
   String get formattedPercentage {
     final sign = percentage >= 0 ? '+' : '';
-    return '$sign${percentage.toStringAsFixed(0)}%';
+    return '${sign}${percentage.toStringAsFixed(0)}%';
   }
 
   Color get percentageColor {

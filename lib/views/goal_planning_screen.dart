@@ -149,7 +149,7 @@ class _GoalPlanningScreenState extends State<GoalPlanningScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Monthly Contribution: \$${health.monthlyContribution.toStringAsFixed(0)}',
+                  'Monthly Contribution: ₹${health.monthlyContribution.toStringAsFixed(0)}',
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
               ],
@@ -265,7 +265,7 @@ class _GoalPlanningScreenState extends State<GoalPlanningScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Target: \$${(goal.target / 1000).toStringAsFixed(0)}K',
+                                                 'Target: ₹${(goal.target / 1000).toStringAsFixed(0)}K',
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -364,13 +364,13 @@ class _GoalPlanningScreenState extends State<GoalPlanningScreen> {
               Expanded(
                 child: _buildDetailItem(
                   'Current Savings',
-                  '\$${(goal.currentSavings / 1000).toStringAsFixed(0)}K',
+                                       '₹${(goal.currentSavings / 1000).toStringAsFixed(0)}K',
                 ),
               ),
               Expanded(
                 child: _buildDetailItem(
                   'Monthly Contribution',
-                  '\$${goal.monthlyContribution.toStringAsFixed(0)}',
+                                     '₹${goal.monthlyContribution.toStringAsFixed(0)}',
                 ),
               ),
             ],
@@ -589,7 +589,7 @@ class ProjectedGrowthChartPainter extends CustomPainter {
       final value = maxValue - (maxValue - minValue) * i / 4;
       final y = padding + (height - 2 * padding) * i / 4;
       final textSpan = TextSpan(
-        text: '\$${(value / 1000).toStringAsFixed(0)}K',
+                         text: '₹${(value / 1000).toStringAsFixed(0)}K',
         style: textStyle,
       );
       final textPainter = TextPainter(

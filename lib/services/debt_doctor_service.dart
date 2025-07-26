@@ -69,7 +69,7 @@ class DebtDoctorService {
         color: const Color(0xFF1E3A8A),
         payoffData: [185000, 172000, 159000, 146000, 133000, 120000, 107000, 94000, 81000, 68000, 55000, 42000, 29000, 16000, 3000, 0],
       ),
-      recommendation: 'The Avalanche method saves you \$3,800 in interest and pays off debt 4 months faster.',
+              recommendation: 'The Avalanche method saves you ₹3,800 in interest and pays off debt 4 months faster.',
       savings: 3800,
       timeSaved: 4,
     );

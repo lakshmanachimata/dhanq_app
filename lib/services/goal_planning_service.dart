@@ -70,7 +70,7 @@ class GoalPlanningService {
       recommendations: [
         Recommendation(
           id: '1',
-          description: 'Increase monthly contribution by \$200 to improve success rate by 7%',
+          description: 'Increase monthly contribution by ₹200 to improve success rate by 7%',
           improvementPercentage: 7,
         ),
         Recommendation(

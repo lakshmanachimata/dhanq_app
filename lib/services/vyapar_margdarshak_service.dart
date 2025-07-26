@@ -107,7 +107,7 @@ class VyaparMargdarshakService {
 
   Future<void> addInventory(String item, int quantity, double cost) async {
     await _simulateDelay();
-    print('Adding inventory: $item - $quantity units at ₹$cost each');
+    print('Adding inventory: $item - $quantity units at ₹${cost} each');
   }
 
   Future<void> viewReports() async {
