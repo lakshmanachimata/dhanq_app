@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/kisaan_saathi_viewmodel.dart';
+
 import '../models/kisaan_saathi_model.dart';
+import '../viewmodels/kisaan_saathi_viewmodel.dart';
 
 class KisaanSaathiScreen extends StatefulWidget {
   const KisaanSaathiScreen({super.key});
@@ -23,7 +24,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
               viewModel.initializeData();
             }
           });
-          
+
           return Scaffold(
             backgroundColor: const Color(0xFFF5F5F5),
             body: _buildBody(viewModel),
@@ -68,22 +69,22 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
           children: [
             // Header
             _buildHeader(viewModel),
-            
+
             // Voice Assistant Section
             _buildVoiceAssistantSection(viewModel),
-            
+
             // Farm Finance Section
             _buildFarmFinanceSection(viewModel),
-            
+
             // Government Schemes Section
             _buildGovernmentSchemesSection(viewModel),
-            
+
             // Weather & Market Section
             _buildWeatherMarketSection(viewModel),
-            
+
             // Micro-Loans & SHG Section
             _buildMicroLoanSHGSection(viewModel),
-            
+
             const SizedBox(height: 20),
           ],
         ),
@@ -131,9 +132,13 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
     );
   }
 
-  Widget _buildLanguageButton(String text, LanguageType language, KisaanSaathiViewModel viewModel) {
+  Widget _buildLanguageButton(
+    String text,
+    LanguageType language,
+    KisaanSaathiViewModel viewModel,
+  ) {
     final isSelected = viewModel.selectedLanguage == language;
-    
+
     return GestureDetector(
       onTap: () => viewModel.setLanguage(language),
       child: Container(
@@ -141,10 +146,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF1E3A8A) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFF1E3A8A),
-            width: 1,
-          ),
+          border: Border.all(color: const Color(0xFF1E3A8A), width: 1),
         ),
         child: Text(
           text,
@@ -212,7 +214,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
               if (viewModel.voiceQueryData!.isListening) {
                 viewModel.stopVoiceListening();
               } else {
-                viewModel.startVoiceListening();
+                viewModel.startVoiceListening(context);
               }
             },
             child: Container(
@@ -260,7 +262,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Content card
           Container(
             padding: const EdgeInsets.all(20),
@@ -279,13 +281,13 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             child: Column(
               children: [
                 // Upcoming payments
-                ...viewModel.farmFinanceData!.upcomingPayments.map((payment) => 
-                  _buildPaymentItem(payment)
+                ...viewModel.farmFinanceData!.upcomingPayments.map(
+                  (payment) => _buildPaymentItem(payment),
                 ),
                 const Divider(height: 24),
                 // Harvest incomes
-                ...viewModel.farmFinanceData!.harvestIncomes.map((income) => 
-                  _buildIncomeItem(income)
+                ...viewModel.farmFinanceData!.harvestIncomes.map(
+                  (income) => _buildIncomeItem(income),
                 ),
                 const SizedBox(height: 16),
                 // Voice prompt
@@ -335,10 +337,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
                 ),
                 Text(
                   'Due: ${payment.formattedDueDate}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -376,10 +375,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
                 ),
                 Text(
                   'Expected: ${income.formattedDate}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -415,17 +411,20 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Scheme cards
-          ...viewModel.governmentSchemes.map((scheme) => 
-            _buildSchemeCard(scheme, viewModel)
+          ...viewModel.governmentSchemes.map(
+            (scheme) => _buildSchemeCard(scheme, viewModel),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSchemeCard(GovernmentSchemeModel scheme, KisaanSaathiViewModel viewModel) {
+  Widget _buildSchemeCard(
+    GovernmentSchemeModel scheme,
+    KisaanSaathiViewModel viewModel,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -458,15 +457,12 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
                 const SizedBox(height: 4),
                 Text(
                   scheme.description,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () => viewModel.checkSchemeStatus(scheme.name),
-                  child:                   Text(
+                  child: Text(
                     scheme.actionText,
                     style: const TextStyle(
                       fontSize: 14,
@@ -528,11 +524,11 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Market prices card
           _buildMarketPricesCard(viewModel),
           const SizedBox(height: 12),
-          
+
           // Weather forecast card
           _buildWeatherForecastCard(viewModel),
         ],
@@ -567,18 +563,15 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          ...viewModel.weatherMarketData!.marketPrices.map((price) => 
-            Padding(
+          ...viewModel.weatherMarketData!.marketPrices.map(
+            (price) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     price.crop,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                    ),
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
                   ),
                   Text(
                     price.formattedPrice,
@@ -593,17 +586,17 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             ),
           ),
           const SizedBox(height: 12),
-                      GestureDetector(
-              onTap: viewModel.viewMarketPrices,
-              child: const Text(
-                'View Prices >',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1E3A8A),
-                ),
+          GestureDetector(
+            onTap: viewModel.viewMarketPrices,
+            child: const Text(
+              'View Prices >',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1E3A8A),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -611,7 +604,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
 
   Widget _buildWeatherForecastCard(KisaanSaathiViewModel viewModel) {
     final weather = viewModel.weatherMarketData!.weatherForecast;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -643,19 +636,12 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
                 const SizedBox(height: 4),
                 Text(
                   weather.recommendation,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
           ),
-          Icon(
-            weather.icon,
-            color: const Color(0xFF1E3A8A),
-            size: 32,
-          ),
+          Icon(weather.icon, color: const Color(0xFF1E3A8A), size: 32),
         ],
       ),
     );
@@ -679,11 +665,11 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Loan payment card
           _buildLoanPaymentCard(viewModel),
           const SizedBox(height: 12),
-          
+
           // SHG meeting card
           _buildSHGMeetingCard(viewModel),
         ],
@@ -693,7 +679,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
 
   Widget _buildLoanPaymentCard(KisaanSaathiViewModel viewModel) {
     final loan = viewModel.microLoanSHGData!.loanPayments.first;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -725,25 +711,22 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
                 const SizedBox(height: 4),
                 Text(
                   '${loan.formattedDueDate} • Amount ${loan.formattedAmount}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
           ),
-                      GestureDetector(
-              onTap: () => viewModel.repayLoan('LOAN001'),
-              child: const Text(
-                'Repay >',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1E3A8A),
-                ),
+          GestureDetector(
+            onTap: () => viewModel.repayLoan('LOAN001'),
+            child: const Text(
+              'Repay >',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1E3A8A),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -751,7 +734,7 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
 
   Widget _buildSHGMeetingCard(KisaanSaathiViewModel viewModel) {
     final meeting = viewModel.microLoanSHGData!.shgMeetings.first;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -783,33 +766,26 @@ class _KisaanSaathiScreenState extends State<KisaanSaathiScreen> {
                 const SizedBox(height: 4),
                 Text(
                   meeting.formattedDate,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
           ),
-          const Icon(
-            Icons.group,
-            color: const Color(0xFF1E3A8A),
-            size: 24,
-          ),
+          const Icon(Icons.group, color: const Color(0xFF1E3A8A), size: 24),
           const SizedBox(width: 12),
-                      GestureDetector(
-              onTap: () => viewModel.joinSHGMeeting('MEETING001'),
-              child: const Text(
-                'Join Meeting >',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1E3A8A),
-                ),
+          GestureDetector(
+            onTap: () => viewModel.joinSHGMeeting('MEETING001'),
+            child: const Text(
+              'Join Meeting >',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1E3A8A),
               ),
             ),
+          ),
         ],
       ),
     );
   }
-} 
+}

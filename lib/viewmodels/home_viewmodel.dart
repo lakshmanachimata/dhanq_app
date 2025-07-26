@@ -74,25 +74,16 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   // Start voice listening
-  void startVoiceListening(BuildContext context) async {
-    // TODO: Implement voice listening logic
-    // get microphone permission
-    //write code to get microphone permission
-    final microphonePermission = await PermissionHelper.getMicrophonePermission(
+  Future<void> startVoiceListening(BuildContext context) async {
+    final hasPermission = await PermissionHelper.getMicrophonePermission(
       context,
     );
-    // if permission is granted, start listening
-    // if permission is not granted, show a dialog to the user to grant permission
-    if (microphonePermission) {
-      _isListening = true;
-      notifyListeners();
+    if (!hasPermission) return;
 
-      // Simulate voice processing
-      Future.delayed(const Duration(seconds: 2), () {
-        _isListening = false;
-        notifyListeners();
-      });
-    }
+    _isListening = true;
+    notifyListeners();
+
+    // Add your voice listening logic here
   }
 
   // Handle service selection

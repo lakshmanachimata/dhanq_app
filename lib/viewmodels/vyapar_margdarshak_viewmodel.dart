@@ -65,6 +65,95 @@ class VyaparMargdarshakViewModel extends ChangeNotifier {
       _setState(VyaparMargdarshakViewState.error);
     }
   }
+
+  // Load all data from JSON at once
+  Future<void> loadAllDataFromJSON() async {
+    if (_state == VyaparMargdarshakViewState.loading) return;
+    
+    _setState(VyaparMargdarshakViewState.loading);
+    
+    try {
+      final jsonData = await _service.getAllVyaparMargdarshakData();
+      
+      // Load business summary
+      final businessSummaryData = jsonData['businessSummary'] as Map<String, dynamic>;
+      _todaySummary = BusinessSummaryModel(
+        sales: (businessSummaryData['sales'] as num).toDouble(),
+        expenses: (businessSummaryData['expenses'] as num).toDouble(),
+        profit: (businessSummaryData['profit'] as num).toDouble(),
+        date: _parseDate(businessSummaryData['date'] as String),
+      );
+      
+      // Load monthly profit
+      final monthlyProfitData = jsonData['monthlyProfit'] as Map<String, dynamic>;
+      final profitDataList = monthlyProfitData['profitData'] as List;
+      final profitData = profitDataList
+          .map((data) => ProfitDataModel(
+                month: data['month'] as String,
+                profit: (data['profit'] as num).toDouble(),
+                isCurrentMonth: data['isCurrentMonth'] as bool? ?? false,
+              ))
+          .toList();
+      
+      _monthlyProfit = MonthlyProfitModel(
+        profitData: profitData,
+        totalProfit: (monthlyProfitData['totalProfit'] as num).toDouble(),
+      );
+      
+      // Load quick actions
+      final quickActionsData = jsonData['quickActions'] as List;
+      _quickActions = quickActionsData
+          .map((action) => QuickActionModel(
+                title: action['title'] as String,
+                icon: _parseIcon(action['icon'] as Map<String, dynamic>),
+                action: action['action'] as String,
+              ))
+          .toList();
+      
+      // Load business growth
+      final businessGrowthData = jsonData['businessGrowth'] as Map<String, dynamic>;
+      final metricsData = businessGrowthData['metrics'] as List;
+      final metrics = metricsData
+          .map((metric) => GrowthMetricModel(
+                title: metric['title'] as String,
+                percentage: (metric['percentage'] as num).toDouble(),
+                comparison: metric['comparison'] as String,
+                icon: _parseIcon(metric['icon'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      _businessGrowth = BusinessGrowthModel(
+        metrics: metrics,
+      );
+      
+      // Load loan offer
+      final loanOfferData = jsonData['loanOffer'] as Map<String, dynamic>;
+      _loanOffer = LoanOfferModel(
+        title: loanOfferData['title'] as String,
+        description: loanOfferData['description'] as String,
+        maxAmount: (loanOfferData['maxAmount'] as num).toDouble(),
+        eligibility: loanOfferData['eligibility'] as String,
+      );
+      
+      _setState(VyaparMargdarshakViewState.loaded);
+    } catch (e) {
+      _errorMessage = 'Failed to load Vyapar Margdarshak data from JSON: ${e.toString()}';
+      _setState(VyaparMargdarshakViewState.error);
+    }
+  }
+
+  // Helper method to parse date from JSON string
+  DateTime _parseDate(String dateString) {
+    return DateTime.parse(dateString);
+  }
+
+  // Helper method to parse icon from JSON
+  IconData _parseIcon(Map<String, dynamic> iconJson) {
+    return IconData(
+      iconJson['codePoint'] as int,
+      fontFamily: iconJson['fontFamily'] as String,
+    );
+  }
   
   // Refresh data
   Future<void> refreshData() async {

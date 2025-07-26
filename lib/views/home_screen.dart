@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildHeader(viewModel),
 
             // Search Bar
-            _buildSearchBar(viewModel),
+            // _buildSearchBar(viewModel),
 
             // Portfolio Section
             _buildPortfolioSection(viewModel),
@@ -302,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           GestureDetector(
             onTap: () => viewModel.startVoiceListening(context),
-            child: const Icon(Icons.mic, color: Colors.grey),
+            child: const Icon(Icons.mic, color: const Color(0xFF1E3A8A)),
           ),
         ],
       ),
