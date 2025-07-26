@@ -1,0 +1,87 @@
+{
+  "portfolio": {
+    "totalValue": 1250000.0,
+    "changePercent": 2.5,
+    "changeValue": 31250.0,
+    "allocation": [
+      {
+        "category": "Equity",
+        "value": 700000.0,
+        "percent": 56.0
+      },
+      {
+        "category": "Debt",
+        "value": 300000.0,
+        "percent": 24.0
+      },
+      {
+        "category": "Gold",
+        "value": 150000.0,
+        "percent": 12.0
+      },
+      {
+        "category": "Real Estate",
+        "value": 100000.0,
+        "percent": 8.0
+      }
+    ]
+  },
+  "actionableInsights": [
+    {
+      "title": "Rebalance Portfolio",
+      "description": "Your equity allocation exceeds your target. Consider rebalancing.",
+      "type": "rebalance",
+      "date": "2024-06-01"
+    },
+    {
+      "title": "Increase SIP",
+      "description": "Increase your monthly SIP to reach your goal faster.",
+      "type": "sip",
+      "date": "2024-06-01"
+    }
+  ],
+  "marketSentiment": {
+    "summary": "Bullish",
+    "score": 0.78,
+    "details": [
+      {
+        "sector": "Technology",
+        "sentiment": "Positive",
+        "score": 0.85
+      },
+      {
+        "sector": "Pharma",
+        "sentiment": "Neutral",
+        "score": 0.5
+      }
+    ]
+  },
+  "interestRateImpact": {
+    "currentRate": 6.5,
+    "projectedRate": 7.0,
+    "impact": [
+      {
+        "asset": "Debt",
+        "changePercent": -1.2
+      },
+      {
+        "asset": "Equity",
+        "changePercent": 0.8
+      }
+    ]
+  },
+  "recentActivities": [
+    {
+      "type": "Buy",
+      "asset": "Equity",
+      "amount": 50000.0,
+      "date": "2024-05-28"
+    },
+    {
+      "type": "Dividend",
+      "asset": "Debt",
+      "amount": 2000.0,
+      "date": "2024-05-25"
+    }
+  ]
+}

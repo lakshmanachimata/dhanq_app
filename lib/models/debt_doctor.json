@@ -1,0 +1,78 @@
+{
+  "debtOverview": {
+    "totalDebt": 120000.0,
+    "monthlyPayment": 2500.0,
+    "interestRate": 7.5,
+    "remainingTermMonths": 48
+  },
+  "debtBreakdown": {
+    "items": [
+      {
+        "name": "Home Loan",
+        "amount": 80000.0,
+        "color": "#1E3A8A"
+      },
+      {
+        "name": "Car Loan",
+        "amount": 25000.0,
+        "color": "#F59E42"
+      },
+      {
+        "name": "Credit Card",
+        "amount": 15000.0,
+        "color": "#E53E3E"
+      }
+    ]
+  },
+  "repaymentStrategies": {
+    "strategies": [
+      {
+        "name": "Avalanche",
+        "totalInterest": 9000.0,
+        "totalPaid": 129000.0,
+        "payoffTimeMonths": 44,
+        "isRecommended": true
+      },
+      {
+        "name": "Snowball",
+        "totalInterest": 11000.0,
+        "totalPaid": 131000.0,
+        "payoffTimeMonths": 48,
+        "isRecommended": false
+      }
+    ]
+  },
+  "creditScore": {
+    "score": 720,
+    "trend": [700, 705, 710, 715, 720]
+  },
+  "creditScoreFactors": {
+    "factors": [
+      {
+        "name": "Payment History",
+        "score": 90,
+        "weight": 35
+      },
+      {
+        "name": "Credit Utilization",
+        "score": 80,
+        "weight": 30
+      },
+      {
+        "name": "Length of Credit History",
+        "score": 70,
+        "weight": 15
+      },
+      {
+        "name": "New Credit",
+        "score": 60,
+        "weight": 10
+      },
+      {
+        "name": "Credit Mix",
+        "score": 75,
+        "weight": 10
+      }
+    ]
+  }
+}
