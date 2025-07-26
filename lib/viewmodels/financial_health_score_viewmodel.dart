@@ -21,6 +21,7 @@ class FinancialHealthScoreViewModel extends ChangeNotifier {
   List<ScoreBreakdownModel> _scoreBreakdown = [];
   List<FinancialInsightModel> _financialInsights = [];
   MonthlyTrendModel? _monthlyTrend;
+  LanguageType _selectedLanguage = LanguageType.english;
   
   // Getters
   FinancialHealthScoreViewState get state => _state;
@@ -32,6 +33,7 @@ class FinancialHealthScoreViewModel extends ChangeNotifier {
   List<ScoreBreakdownModel> get scoreBreakdown => _scoreBreakdown;
   List<FinancialInsightModel> get financialInsights => _financialInsights;
   MonthlyTrendModel? get monthlyTrend => _monthlyTrend;
+  LanguageType get selectedLanguage => _selectedLanguage;
   
   // Initialize data
   Future<void> initializeData() async {
@@ -94,6 +96,12 @@ class FinancialHealthScoreViewModel extends ChangeNotifier {
     }
   }
   
+  // Language switching
+  void setLanguage(LanguageType language) {
+    _selectedLanguage = language;
+    notifyListeners();
+  }
+
   // Handle key metric tap
   void onKeyMetricTap(KeyMetricModel metric) {
     // Handle tap on key metric

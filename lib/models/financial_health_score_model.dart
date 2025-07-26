@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum LanguageType { english, hindi }
+
 class FinancialHealthScoreModel {
   final int score;
   final int maxScore;

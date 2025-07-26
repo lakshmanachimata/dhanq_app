@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum LanguageType { english, hindi }
+
 class IntegrationServiceModel {
   final String name;
   final String description;

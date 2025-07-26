@@ -93,41 +93,81 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
-      color: Colors.white,
-      child: Row(
-        children: [
-          // Back button
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: const Icon(
-              Icons.arrow_back,
-              color: Colors.black87,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Title
-          const Expanded(
-            child: Text(
-              'Integrations',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+    return Consumer<IntegrationsViewModel>(
+      builder: (context, viewModel, child) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+          color: Colors.white,
+          child: Row(
+            children: [
+              // Back button
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black87,
+                  size: 24,
+                ),
               ),
-            ),
+              const SizedBox(width: 16),
+              // Title
+              const Expanded(
+                child: Text(
+                  'Integrations',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+              // Language buttons
+              Row(
+                children: [
+                  _buildLanguageButton('EN', LanguageType.english, viewModel),
+                  const SizedBox(width: 8),
+                  _buildLanguageButton('हि', LanguageType.hindi, viewModel),
+                ],
+              ),
+              const SizedBox(width: 12),
+              // Menu button
+              GestureDetector(
+                onTap: () {
+                  // Show menu options
+                  _showMenuOptions(context);
+                },
+                child: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
+              ),
+            ],
           ),
-          // Menu button
-          GestureDetector(
-            onTap: () {
-              // Show menu options
-              _showMenuOptions(context);
-            },
-            child: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageButton(
+    String text,
+    LanguageType language,
+    IntegrationsViewModel viewModel,
+  ) {
+    final isSelected = viewModel.selectedLanguage == language;
+    return GestureDetector(
+      onTap: () => viewModel.setLanguage(language),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF1E3A8A) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF1E3A8A), width: 1),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : const Color(0xFF1E3A8A),
           ),
-        ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:dhanq_app/views/bachat_guru_screen.dart';
+import 'package:dhanq_app/views/voice_assist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -499,6 +500,11 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Bachat Guru':
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const BachatGuruScreen()),
+        );
+        break;
+      case 'Voice Assistant':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const VoiceAssistScreen()),
         );
         break;
       // Add other service navigations here

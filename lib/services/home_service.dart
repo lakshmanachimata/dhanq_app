@@ -135,7 +135,7 @@ class HomeService {
         ),
         FinancialServiceModel(
           id: 'voice_assistant',
-          name: 'Voice-Assisted Transaction History & Expense Categorization',
+          name: 'Voice Assistant',
           description: 'Voice-controlled financial tracking',
           icon: Icons.mic,
           color: Colors.indigo,

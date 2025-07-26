@@ -21,6 +21,7 @@ class IntegrationsViewModel extends ChangeNotifier {
   List<IntegrationCategoryModel> _availableIntegrations = [];
   List<DataPermissionModel> _dataPermissions = [];
   List<IntegrationSettingModel> _integrationSettings = [];
+  LanguageType _selectedLanguage = LanguageType.english;
   
   // Getters
   IntegrationsViewState get state => _state;
@@ -32,6 +33,7 @@ class IntegrationsViewModel extends ChangeNotifier {
   List<IntegrationCategoryModel> get availableIntegrations => _availableIntegrations;
   List<DataPermissionModel> get dataPermissions => _dataPermissions;
   List<IntegrationSettingModel> get integrationSettings => _integrationSettings;
+  LanguageType get selectedLanguage => _selectedLanguage;
   
   // Initialize data
   Future<void> initializeData() async {
@@ -148,6 +150,12 @@ class IntegrationsViewModel extends ChangeNotifier {
   void onSettingTap(IntegrationSettingModel setting) {
     // Handle tap on setting
     print('Tapped on setting: ${setting.name}');
+  }
+  
+  // Language switching
+  void setLanguage(LanguageType language) {
+    _selectedLanguage = language;
+    notifyListeners();
   }
   
   // Private methods
