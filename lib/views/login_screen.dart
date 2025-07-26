@@ -26,6 +26,13 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         body: Consumer<LoginViewModel>(
           builder: (context, viewModel, child) {
+            // Initialize the viewmodel when the widget is first built
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!viewModel.isInitialized) {
+                viewModel.initialize();
+              }
+            });
+            
             return _buildBody(viewModel);
           },
         ),
@@ -56,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (viewModel.selectedMethod == LoginMethod.mobile)
               _buildPhoneInput(viewModel),
 
-            // mPIN Input
+            // mPIN Input (includes mobile number)
             if (viewModel.selectedMethod == LoginMethod.mpin)
               _buildMpinInput(viewModel),
 
@@ -284,6 +291,36 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Mobile Number Input
+        const Text(
+          'Mobile Number',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: viewModel.phoneController,
+          keyboardType: TextInputType.phone,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
+          ],
+          decoration: InputDecoration(
+            hintText: 'Enter 10-digit mobile number',
+            prefixIcon: const Icon(Icons.phone, color: Colors.grey),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        
+        // mPIN Input
         const Text(
           'mPIN',
           style: TextStyle(
