@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/asset_model.dart';
 import '../models/portfolio_model.dart';
@@ -10,11 +10,18 @@ class AssetService {
   Future<AssetManagementModel> getAssetManagementData() async {
     try {
       // Load JSON file from assets
-      final jsonString = await rootBundle.loadString(
-        'assets/asset_management_data.json',
+      // final jsonString = await rootBundle.loadString(
+      //   'assets/asset_management_data.json',
+      // );
+      // load json from below url using http package
+      final response = await http.get(
+        Uri.parse(
+          'https://dhanqserv-43683479109.us-central1.run.app/api/asset-management/12345',
+        ),
       );
+      final jsonString = response.body;
       final jsonData = json.decode(jsonString);
-      return AssetManagementModel.fromJson(jsonData);
+      return AssetManagementModel.fromJson(jsonData['portfolio']);
     } catch (e) {
       // Fallback to mock data if asset loading fails
       return await _loadLocalData();

@@ -14,7 +14,7 @@ class AssetViewModel extends ChangeNotifier {
   AssetViewState _state = AssetViewState.initial;
   AssetManagementModel? _assetData;
   String? _errorMessage;
-  AssetTab _selectedTab = AssetTab.overview;
+  AssetTab _selectedTab = AssetTab.assets;
 
   // Getters
   AssetViewState get state => _state;
