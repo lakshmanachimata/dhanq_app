@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'portfolio_model.dart';
 import 'activity_model.dart';
 import 'financial_service_model.dart';
+import 'portfolio_model.dart';
 
 class HomeDataModel {
   final PortfolioModel portfolio;
@@ -19,20 +18,29 @@ class HomeDataModel {
   });
 
   factory HomeDataModel.fromJson(Map<String, dynamic> json) {
+    // Convert all values in portfolioBreakdown to double, even if they are int
+    final rawBreakdown = json['portfolioBreakdown'] as Map<String, dynamic>;
+    final breakdown = rawBreakdown.map(
+      (key, value) =>
+          MapEntry(key, (value is int) ? value.toDouble() : value as double),
+    );
     return HomeDataModel(
       portfolio: PortfolioModel.fromJson(json['portfolio']),
-      activities: (json['activities'] as List)
-          .map((activity) => ActivityModel.fromJson(activity))
-          .toList(),
+      activities:
+          (json['activities'] as List)
+              .map((activity) => ActivityModel.fromJson(activity))
+              .toList(),
       financialServices: {
-        'urban': (json['financialServices']['urban'] as List)
-            .map((service) => FinancialServiceModel.fromJson(service))
-            .toList(),
-        'rural': (json['financialServices']['rural'] as List)
-            .map((service) => FinancialServiceModel.fromJson(service))
-            .toList(),
+        'urban':
+            (json['financialServices']['urban'] as List)
+                .map((service) => FinancialServiceModel.fromJson(service))
+                .toList(),
+        'rural':
+            (json['financialServices']['rural'] as List)
+                .map((service) => FinancialServiceModel.fromJson(service))
+                .toList(),
       },
-      portfolioBreakdown: Map<String, double>.from(json['portfolioBreakdown']),
+      portfolioBreakdown: breakdown,
       userProfile: UserProfileModel.fromJson(json['userProfile']),
     );
   }
@@ -42,8 +50,14 @@ class HomeDataModel {
       'portfolio': portfolio.toJson(),
       'activities': activities.map((activity) => activity.toJson()).toList(),
       'financialServices': {
-        'urban': financialServices['urban']!.map((service) => service.toJson()).toList(),
-        'rural': financialServices['rural']!.map((service) => service.toJson()).toList(),
+        'urban':
+            financialServices['urban']!
+                .map((service) => service.toJson())
+                .toList(),
+        'rural':
+            financialServices['rural']!
+                .map((service) => service.toJson())
+                .toList(),
       },
       'portfolioBreakdown': portfolioBreakdown,
       'userProfile': userProfile.toJson(),
@@ -81,4 +95,4 @@ class UserProfileModel {
       'onboardingCompleted': onboardingCompleted,
     };
   }
-} 
+}

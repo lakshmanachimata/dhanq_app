@@ -21,7 +21,7 @@ class AssetService {
       );
       final jsonString = response.body;
       final jsonData = json.decode(jsonString);
-      return AssetManagementModel.fromJson(jsonData['portfolio']);
+      return AssetManagementModel.fromJson(jsonData);
     } catch (e) {
       // Fallback to mock data if asset loading fails
       return await _loadLocalData();

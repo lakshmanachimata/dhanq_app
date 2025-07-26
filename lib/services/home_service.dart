@@ -24,7 +24,7 @@ class HomeService {
       );
       final jsonString = response.body;
       final jsonData = json.decode(jsonString);
-      return HomeDataModel.fromJson(jsonData['portfolio']);
+      return HomeDataModel.fromJson(jsonData);
     } catch (e) {
       // Fallback to mock data if asset loading fails
       return await _loadLocalData();
@@ -125,15 +125,6 @@ class HomeService {
             description: 'Connect with other financial services',
             icon: Icons.api,
             color: Colors.purple,
-            category: 'urban',
-          ),
-          FinancialServiceModel(
-            id: 'goal_planning',
-            name: 'Goal Planning',
-            description:
-                'Complex multi-goal planning with detailed projections',
-            icon: Icons.track_changes,
-            color: Colors.indigo,
             category: 'urban',
           ),
         ],
