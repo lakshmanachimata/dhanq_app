@@ -63,6 +63,121 @@ class IntegrationsViewModel extends ChangeNotifier {
       _setState(IntegrationsViewState.error);
     }
   }
+
+  // Load all data from JSON at once
+  Future<void> loadAllDataFromJSON() async {
+    if (_state == IntegrationsViewState.loading) return;
+    
+    _setState(IntegrationsViewState.loading);
+    
+    try {
+      final jsonData = await _service.getAllIntegrationsData();
+      
+      // Load recommended services
+      final servicesData = jsonData['integrationServices'] as List;
+      _recommendedServices = servicesData
+          .where((service) => service['isRecommended'] == true)
+          .map((service) => IntegrationServiceModel(
+                name: service['name'] as String,
+                description: service['description'] as String,
+                icon: _parseIcon(service['icon'] as Map<String, dynamic>),
+                category: service['category'] as String?,
+                status: _parseStatus(service['status'] as String),
+                lastSync: service['lastSync'] as String?,
+                isConnected: service['isConnected'] as bool,
+                isRecommended: service['isRecommended'] as bool? ?? false,
+              ))
+          .toList();
+      
+      // Load connected services
+      _connectedServices = servicesData
+          .where((service) => service['isConnected'] == true)
+          .map((service) => IntegrationServiceModel(
+                name: service['name'] as String,
+                description: service['description'] as String,
+                icon: _parseIcon(service['icon'] as Map<String, dynamic>),
+                category: service['category'] as String?,
+                status: _parseStatus(service['status'] as String),
+                lastSync: service['lastSync'] as String?,
+                isConnected: service['isConnected'] as bool,
+                isRecommended: service['isRecommended'] as bool? ?? false,
+              ))
+          .toList();
+      
+      // Load available integrations by category
+      final categoriesData = jsonData['integrationCategories'] as List;
+      _availableIntegrations = categoriesData
+          .map((category) => IntegrationCategoryModel(
+                name: category['name'] as String,
+                icon: _parseIcon(category['icon'] as Map<String, dynamic>),
+                services: (category['services'] as List)
+                    .map((service) => IntegrationServiceModel(
+                          name: service['name'] as String,
+                          description: service['description'] as String,
+                          icon: _parseIcon(service['icon'] as Map<String, dynamic>),
+                          category: service['category'] as String?,
+                          status: _parseStatus(service['status'] as String),
+                          lastSync: service['lastSync'] as String?,
+                          isConnected: service['isConnected'] as bool,
+                          isRecommended: service['isRecommended'] as bool? ?? false,
+                        ))
+                    .toList(),
+              ))
+          .toList();
+      
+      // Load data permissions
+      final permissionsData = jsonData['dataPermissions'] as List;
+      _dataPermissions = permissionsData
+          .map((permission) => DataPermissionModel(
+                serviceName: permission['serviceName'] as String,
+                icon: _parseIcon(permission['icon'] as Map<String, dynamic>),
+                lastAccessed: permission['lastAccessed'] as String,
+                permissions: (permission['permissions'] as List)
+                    .map((perm) => DataPermissionItem(
+                          dataType: perm['dataType'] as String,
+                          isEnabled: perm['isEnabled'] as bool,
+                        ))
+                    .toList(),
+              ))
+          .toList();
+      
+      // Load integration settings
+      final settingsData = jsonData['integrationSettings'] as List;
+      _integrationSettings = settingsData
+          .map((setting) => IntegrationSettingModel(
+                name: setting['name'] as String,
+                description: setting['description'] as String,
+                isEnabled: setting['isEnabled'] as bool,
+              ))
+          .toList();
+      
+      _setState(IntegrationsViewState.loaded);
+    } catch (e) {
+      _errorMessage = 'Failed to load integrations data from JSON: ${e.toString()}';
+      _setState(IntegrationsViewState.error);
+    }
+  }
+
+  // Helper method to parse icon from JSON
+  IconData _parseIcon(Map<String, dynamic> iconJson) {
+    return IconData(iconJson['codePoint'] as int, fontFamily: iconJson['fontFamily'] as String);
+  }
+
+  // Helper method to parse status string to IntegrationStatus enum
+  IntegrationStatus _parseStatus(String statusString) {
+    switch (statusString) {
+      case 'connected':
+        return IntegrationStatus.connected;
+      case 'disconnected':
+        return IntegrationStatus.disconnected;
+      case 'pending':
+        return IntegrationStatus.pending;
+      case 'error':
+        return IntegrationStatus.error;
+      default:
+        return IntegrationStatus.disconnected;
+    }
+  }
   
   // Refresh data
   Future<void> refreshData() async {

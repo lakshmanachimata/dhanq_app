@@ -1,3 +1,4 @@
+import 'package:dhanq_app/services/home_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,7 +6,9 @@ import '../models/financial_health_score_model.dart';
 import '../viewmodels/financial_health_score_viewmodel.dart';
 
 class FinancialHealthScoreScreen extends StatefulWidget {
-  const FinancialHealthScoreScreen({super.key});
+  final LocationType locationType;
+
+  const FinancialHealthScoreScreen({super.key, required this.locationType});
 
   @override
   State<FinancialHealthScoreScreen> createState() =>
@@ -123,15 +126,17 @@ class _FinancialHealthScoreScreenState
                   ),
                 ),
               ),
-              // Language buttons
-              Row(
-                children: [
-                  _buildLanguageButton('EN', LanguageType.english, viewModel),
-                  const SizedBox(width: 8),
-                  _buildLanguageButton('हि', LanguageType.hindi, viewModel),
-                ],
-              ),
-              const SizedBox(width: 12),
+              // Language buttons (show only if segment is Rural)
+              if (widget.locationType == LocationType.rural) ...[
+                Row(
+                  children: [
+                    _buildLanguageButton('EN', LanguageType.english, viewModel),
+                    const SizedBox(width: 8),
+                    _buildLanguageButton('हि', LanguageType.hindi, viewModel),
+                  ],
+                ),
+                const SizedBox(width: 12),
+              ],
               // Info button
               GestureDetector(
                 onTap: () {

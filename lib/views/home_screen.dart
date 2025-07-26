@@ -11,13 +11,13 @@ import '../viewmodels/home_viewmodel.dart';
 import 'asset_management_screen.dart';
 import 'debt_doctor_screen.dart';
 import 'financial_health_score_screen.dart';
+import 'goal_planning_screen.dart';
 import 'integrations_screen.dart';
 import 'kisaan_saathi_screen.dart';
 import 'login_screen.dart';
 import 'smart_investor_screen.dart';
 import 'tax_whisperer_screen.dart';
 import 'vyapar_margdarshak_screen.dart';
-import 'goal_planning_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -604,11 +604,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleGoalPlanningTap(HomeViewModel viewModel) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const GoalPlanningScreen(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const GoalPlanningScreen()));
   }
 
   Widget _buildServiceCard(
@@ -698,13 +696,20 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Financial Health Score':
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const FinancialHealthScoreScreen(),
+            builder:
+                (context) => FinancialHealthScoreScreen(
+                  locationType: viewModel.locationType,
+                ),
           ),
         );
         break;
       case 'Fintech Connect':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const IntegrationsScreen()),
+          MaterialPageRoute(
+            builder:
+                (context) =>
+                    IntegrationsScreen(locationType: viewModel.locationType),
+          ),
         );
         break;
       case 'Kisaan Saathi':

@@ -1,3 +1,4 @@
+import 'package:dhanq_app/services/home_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,7 +6,8 @@ import '../models/integrations_model.dart';
 import '../viewmodels/integrations_viewmodel.dart';
 
 class IntegrationsScreen extends StatefulWidget {
-  const IntegrationsScreen({super.key});
+  final LocationType locationType;
+  const IntegrationsScreen({super.key, required this.locationType});
 
   @override
   State<IntegrationsScreen> createState() => _IntegrationsScreenState();
@@ -122,13 +124,16 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                 ),
               ),
               // Language buttons
-              Row(
-                children: [
-                  _buildLanguageButton('EN', LanguageType.english, viewModel),
-                  const SizedBox(width: 8),
-                  _buildLanguageButton('हि', LanguageType.hindi, viewModel),
-                ],
-              ),
+              if (widget.locationType == LocationType.rural) ...[
+                Row(
+                  children: [
+                    _buildLanguageButton('EN', LanguageType.english, viewModel),
+                    const SizedBox(width: 8),
+                    _buildLanguageButton('हि', LanguageType.hindi, viewModel),
+                  ],
+                ),
+                const SizedBox(width: 12),
+              ],
               const SizedBox(width: 12),
               // Menu button
               GestureDetector(
@@ -136,7 +141,11 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                   // Show menu options
                   _showMenuOptions(context);
                 },
-                child: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
+                child: const Icon(
+                  Icons.more_vert,
+                  color: Colors.black87,
+                  size: 24,
+                ),
               ),
             ],
           ),
