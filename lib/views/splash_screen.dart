@@ -117,7 +117,7 @@ class _SplashScreenState extends State<SplashScreen>
           ),
           TextSpan(
             text: 'Q',
-            style: TextStyle(color: Color(0xFFFF6B35), fontWeight: FontWeight.w900),
+            style: TextStyle(color: Color(0xFF1E3A8A), fontWeight: FontWeight.w900),
           ),
         ],
       ),
