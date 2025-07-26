@@ -14,11 +14,12 @@ class DebtDoctorViewModel extends ChangeNotifier {
   
   DebtDoctorViewState _state = DebtDoctorViewState.initial;
   String? _errorMessage;
+  DebtDoctorModel? _debtDoctorData;
   
-  // Data models
+  // Legacy data for backward compatibility
   DebtOverviewModel? _debtOverview;
   DebtBreakdownModel? _debtBreakdown;
-  RepaymentStrategiesModel? _repaymentStrategies;
+  List<RepaymentStrategyModel>? _repaymentStrategies;
   CreditScoreModel? _creditScore;
   CreditScoreFactorsModel? _creditScoreFactors;
   
@@ -27,48 +28,117 @@ class DebtDoctorViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoading => _state == DebtDoctorViewState.loading;
   
-  DebtOverviewModel? get debtOverview => _debtOverview;
+  // New getters for unified data model
+  DebtDoctorModel? get debtDoctorData => _debtDoctorData;
+  DebtOverviewModel? get debtOverview => _debtDoctorData?.debtOverview ?? _debtOverview;
   DebtBreakdownModel? get debtBreakdown => _debtBreakdown;
-  RepaymentStrategiesModel? get repaymentStrategies => _repaymentStrategies;
-  CreditScoreModel? get creditScore => _creditScore;
-  CreditScoreFactorsModel? get creditScoreFactors => _creditScoreFactors;
+  List<DebtModel> get debts => _debtDoctorData?.debts ?? [];
+  List<RepaymentStrategyModel> get repaymentStrategies => _debtDoctorData?.repaymentStrategies ?? _repaymentStrategies ?? [];
+  CreditScoreModel? get creditScore => _debtDoctorData?.creditScore ?? _creditScore;
+  List<CreditScoreFactor> get creditScoreFactors => _debtDoctorData?.creditScore.factors ?? _creditScoreFactors?.factors ?? [];
+  List<InsightModel> get insights => _debtDoctorData?.insights ?? [];
+  
+  // Legacy getters for backward compatibility
+  DebtBreakdownModel? get debtBreakdownModel => _debtBreakdown;
+  List<RepaymentStrategyModel>? get repaymentStrategiesModel => _repaymentStrategies;
+  CreditScoreFactorsModel? get creditScoreFactorsModel => _creditScoreFactors;
+  
+  // Create RepaymentStrategiesModel from list for UI compatibility
+  RepaymentStrategiesModel? get repaymentStrategiesModelForUI {
+    final strategies = repaymentStrategies;
+    if (strategies.length >= 2) {
+      return RepaymentStrategiesModel(
+        avalanche: strategies.firstWhere((s) => s.name.toLowerCase().contains('avalanche'), orElse: () => strategies[0]),
+        snowball: strategies.firstWhere((s) => s.name.toLowerCase().contains('snowball'), orElse: () => strategies[1]),
+        recommendation: strategies.first.recommendation,
+        savings: strategies.first.savings,
+        timeSaved: strategies.first.timeSaved,
+      );
+    }
+    return null;
+  }
+  
+  // Create CreditScoreFactorsModel from list for UI compatibility
+  CreditScoreFactorsModel? get creditScoreFactorsModelForUI {
+    final factors = creditScoreFactors;
+    if (factors.isNotEmpty) {
+      return CreditScoreFactorsModel(factors: factors);
+    }
+    return null;
+  }
   
   // Initialize data
   Future<void> initializeData() async {
-    if (_state == DebtDoctorViewState.loading) return;
-    
-    _setState(DebtDoctorViewState.loading);
-    
+    if (_state == DebtDoctorViewState.initial) {
+      _state = DebtDoctorViewState.loading;
+      notifyListeners();
+      
+      try {
+        _debtDoctorData = await _service.getDebtDoctorData();
+        
+        // Load legacy data for backward compatibility
+        await Future.wait([
+          _loadLegacyData(),
+        ]);
+        
+        _state = DebtDoctorViewState.loaded;
+      } catch (e) {
+        _errorMessage = 'Failed to load debt data: ${e.toString()}';
+        _state = DebtDoctorViewState.error;
+      }
+      notifyListeners();
+    }
+  }
+
+  // Load legacy data for backward compatibility
+  Future<void> _loadLegacyData() async {
     try {
-      // Load all data concurrently
-      final results = await Future.wait([
-        _service.getDebtOverview(),
-        _service.getDebtBreakdown(),
-        _service.getRepaymentStrategies(),
-        _service.getCreditScore(),
-        _service.getCreditScoreFactors(),
-      ]);
+      _debtOverview = await _service.getDebtOverview();
       
-      _debtOverview = results[0] as DebtOverviewModel;
-      _debtBreakdown = results[1] as DebtBreakdownModel;
-      _repaymentStrategies = results[2] as RepaymentStrategiesModel;
-      _creditScore = results[3] as CreditScoreModel;
-      _creditScoreFactors = results[4] as CreditScoreFactorsModel;
+      // Create DebtBreakdownModel from the new data structure
+      if (_debtDoctorData != null) {
+        final breakdownMap = _debtDoctorData!.debtBreakdown;
+        final totalAmount = _debtDoctorData!.debtOverview.totalDebt;
+        final items = breakdownMap.entries.map((entry) => DebtBreakdownItem(
+          type: entry.key,
+          amount: totalAmount * entry.value / 100,
+          color: _getCategoryColor(entry.key),
+          percentage: entry.value,
+        )).toList();
+        _debtBreakdown = DebtBreakdownModel(items: items, totalAmount: totalAmount);
+      } else {
+        _debtBreakdown = await _service.getDebtBreakdown();
+      }
       
-      _setState(DebtDoctorViewState.loaded);
+      _repaymentStrategies = await _service.getRepaymentStrategies();
+      _creditScore = await _service.getCreditScore();
+      final factors = await _service.getCreditScoreFactors();
+      _creditScoreFactors = CreditScoreFactorsModel(factors: factors);
     } catch (e) {
-      _errorMessage = 'Failed to load debt data: ${e.toString()}';
-      _setState(DebtDoctorViewState.error);
+      print('Legacy data loading failed: $e');
+    }
+  }
+
+  // Helper method to get color for debt category
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case 'creditCards':
+        return Colors.red;
+      case 'personalLoans':
+        return Colors.orange;
+      case 'homeLoan':
+        return Colors.blue;
+      case 'studentLoan':
+        return Colors.green;
+      default:
+        return Colors.grey;
     }
   }
   
   // Refresh data
   Future<void> refreshData() async {
-    _debtOverview = null;
-    _debtBreakdown = null;
-    _repaymentStrategies = null;
-    _creditScore = null;
-    _creditScoreFactors = null;
+    _state = DebtDoctorViewState.loading;
+    notifyListeners();
     await initializeData();
   }
   
@@ -98,12 +168,18 @@ class DebtDoctorViewModel extends ChangeNotifier {
   // Handle credit score factor tap
   void onCreditScoreFactorTap(CreditScoreFactor factor) {
     // Handle tap on credit score factor
-    print('Tapped on ${factor.name}: ${factor.status}');
+    print('Tapped on ${factor.factor}: ${factor.impact}');
   }
-  
-  // Private methods
-  void _setState(DebtDoctorViewState newState) {
-    _state = newState;
-    notifyListeners();
+
+  // Handle debt tap
+  void onDebtTap(DebtModel debt) {
+    // Handle tap on individual debt
+    print('Tapped on ${debt.name}: ${debt.formattedBalance}');
+  }
+
+  // Handle insight tap
+  void onInsightTap(InsightModel insight) {
+    // Handle tap on insight
+    print('Tapped on insight: ${insight.title}');
   }
 } 

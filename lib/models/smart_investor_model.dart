@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'portfolio_model.dart';
+
 import 'asset_model.dart';
+import 'portfolio_model.dart';
 
 class SmartInvestorModel {
   final PortfolioModel portfolio;
@@ -24,21 +25,32 @@ class SmartInvestorModel {
   });
 
   factory SmartInvestorModel.fromJson(Map<String, dynamic> json) {
+    // Convert all values in allocation to double, even if they are int
+    final rawAllocation = json['allocation'] as Map<String, dynamic>;
+    final allocation = rawAllocation.map(
+      (key, value) =>
+          MapEntry(key, (value is int) ? value.toDouble() : value as double),
+    );
     return SmartInvestorModel(
       portfolio: PortfolioModel.fromJson(json['portfolio']),
-      allocation: Map<String, double>.from(json['allocation']),
-      assets: (json['assets'] as List)
-          .map((asset) => AssetModel.fromJson(asset))
-          .toList(),
+      allocation: allocation,
+      assets:
+          (json['assets'] as List)
+              .map((asset) => AssetModel.fromJson(asset))
+              .toList(),
       marketSentiment: MarketSentimentModel.fromJson(json['marketSentiment']),
-      interestRateImpact: InterestRateImpactModel.fromJson(json['interestRateImpact']),
-      recommendations: (json['recommendations'] as List)
-          .map((rec) => RecommendationModel.fromJson(rec))
-          .toList(),
+      interestRateImpact: InterestRateImpactModel.fromJson(
+        json['interestRateImpact'],
+      ),
+      recommendations:
+          (json['recommendations'] as List)
+              .map((rec) => RecommendationModel.fromJson(rec))
+              .toList(),
       performance: PerformanceModel.fromJson(json['performance']),
-      insights: (json['insights'] as List)
-          .map((insight) => InsightModel.fromJson(insight))
-          .toList(),
+      insights:
+          (json['insights'] as List)
+              .map((insight) => InsightModel.fromJson(insight))
+              .toList(),
     );
   }
 
@@ -71,10 +83,26 @@ class PortfolioAllocationModel {
   });
 
   List<AllocationItem> get allocationItems => [
-    AllocationItem(name: 'Equity', percentage: equity, color: const Color(0xFF1E3A8A)),
-    AllocationItem(name: 'Debt', percentage: debt, color: const Color(0xFFFFD700)),
-    AllocationItem(name: 'Gold', percentage: gold, color: const Color(0xFFFFB6C1)),
-    AllocationItem(name: 'Cash', percentage: cash, color: const Color(0xFFDEB887)),
+    AllocationItem(
+      name: 'Equity',
+      percentage: equity,
+      color: const Color(0xFF1E3A8A),
+    ),
+    AllocationItem(
+      name: 'Debt',
+      percentage: debt,
+      color: const Color(0xFFFFD700),
+    ),
+    AllocationItem(
+      name: 'Gold',
+      percentage: gold,
+      color: const Color(0xFFFFB6C1),
+    ),
+    AllocationItem(
+      name: 'Cash',
+      percentage: cash,
+      color: const Color(0xFFDEB887),
+    ),
   ];
 }
 
@@ -107,9 +135,10 @@ class MarketSentimentModel {
     return MarketSentimentModel(
       overallSentiment: json['overallSentiment'],
       confidence: json['confidence'],
-      factors: (json['factors'] as List)
-          .map((factor) => SentimentFactor.fromJson(factor))
-          .toList(),
+      factors:
+          (json['factors'] as List)
+              .map((factor) => SentimentFactor.fromJson(factor))
+              .toList(),
     );
   }
 
@@ -123,10 +152,18 @@ class MarketSentimentModel {
 
   // Getters for backward compatibility
   String get title => 'Market Sentiment Analysis';
-  String get description => 'Overall sentiment: $overallSentiment with $confidence% confidence';
+  String get description =>
+      'Overall sentiment: $overallSentiment with $confidence% confidence';
   String get actionText => 'Learn More';
   String? get timeframe => 'Current Market';
-  List<double>? get chartData => [65, 70, 75, 80, 75, 70]; // Sample confidence trend
+  List<double>? get chartData => [
+    65,
+    70,
+    75,
+    80,
+    75,
+    70,
+  ]; // Sample confidence trend
   Color get accentColor => const Color(0xFF1E3A8A); // Default blue accent color
 }
 
@@ -150,11 +187,7 @@ class SentimentFactor {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'factor': factor,
-      'impact': impact,
-      'description': description,
-    };
+    return {'factor': factor, 'impact': impact, 'description': description};
   }
 }
 
@@ -324,4 +357,4 @@ String _formatNumber(double number) {
   } else {
     return number.toStringAsFixed(0);
   }
-} 
+}

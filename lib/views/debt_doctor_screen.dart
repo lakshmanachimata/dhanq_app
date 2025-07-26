@@ -155,7 +155,8 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           const SizedBox(height: 20),
 
           // Repayment Strategies
-          _buildRepaymentStrategies(viewModel.repaymentStrategies!, viewModel),
+          if (viewModel.repaymentStrategiesModelForUI != null)
+            _buildRepaymentStrategies(viewModel.repaymentStrategiesModelForUI!, viewModel),
         ],
       ),
     );
@@ -518,7 +519,8 @@ class _DebtDoctorScreenState extends State<DebtDoctorScreen> {
           const SizedBox(height: 20),
 
           // Credit Score Factors
-          _buildCreditScoreFactors(viewModel.creditScoreFactors!, viewModel),
+          if (viewModel.creditScoreFactorsModelForUI != null)
+            _buildCreditScoreFactors(viewModel.creditScoreFactorsModelForUI!, viewModel),
         ],
       ),
     );

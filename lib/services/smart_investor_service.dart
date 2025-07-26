@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/asset_model.dart';
 import '../models/portfolio_model.dart';
@@ -10,9 +10,16 @@ class SmartInvestorService {
   // Load Smart Investor data from JSON file
   Future<SmartInvestorModel> getSmartInvestorData() async {
     try {
-      final jsonString = await rootBundle.loadString(
-        'assets/smart_investor.json',
+      // final jsonString = await rootBundle.loadString(
+      //   'assets/smart_investor.json',
+      // );
+      // load json from below url using http package
+      final response = await http.get(
+        Uri.parse(
+          'https://dhanqserv-43683479109.us-central1.run.app/api/smart-investor/12345',
+        ),
       );
+      final jsonString = response.body;
       final jsonData = json.decode(jsonString);
       return SmartInvestorModel.fromJson(jsonData);
     } catch (e) {
