@@ -63,6 +63,86 @@ class FinancialHealthScoreViewModel extends ChangeNotifier {
       _setState(FinancialHealthScoreViewState.error);
     }
   }
+
+  // Load all data from JSON at once
+  Future<void> loadAllDataFromJSON() async {
+    if (_state == FinancialHealthScoreViewState.loading) return;
+    
+    _setState(FinancialHealthScoreViewState.loading);
+    
+    try {
+      final jsonData = await _service.getAllFinancialHealthScoreData();
+      
+      // Load financial health score
+      final healthScoreData = jsonData['financialHealthScore'] as Map<String, dynamic>;
+      _financialHealthScore = FinancialHealthScoreModel(
+        score: healthScoreData['score'] as int,
+        maxScore: healthScoreData['maxScore'] as int,
+        status: healthScoreData['status'] as String,
+        statusColor: _parseColor(healthScoreData['statusColor'] as Map<String, dynamic>),
+        description: healthScoreData['description'] as String,
+      );
+      
+      // Load key metrics
+      final keyMetricsData = jsonData['keyMetrics'] as List;
+      _keyMetrics = keyMetricsData
+          .map((metric) => KeyMetricModel(
+                label: metric['label'] as String,
+                value: metric['value'] as String,
+                trend: metric['trend'] as String?,
+                isPositiveTrend: metric['isPositiveTrend'] as bool,
+                icon: _parseIcon(metric['icon'] as Map<String, dynamic>),
+                status: metric['status'] as String?,
+              ))
+          .toList();
+      
+      // Load score breakdown
+      final breakdownData = jsonData['scoreBreakdown'] as List;
+      _scoreBreakdown = breakdownData
+          .map((breakdown) => ScoreBreakdownModel(
+                category: breakdown['category'] as String,
+                percentage: (breakdown['percentage'] as num).toDouble(),
+                color: _parseColor(breakdown['color'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      // Load financial insights
+      final insightsData = jsonData['financialInsights'] as List;
+      _financialInsights = insightsData
+          .map((insight) => FinancialInsightModel(
+                text: insight['text'] as String,
+                icon: _parseIcon(insight['icon'] as Map<String, dynamic>),
+                iconColor: _parseColor(insight['iconColor'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      // Load monthly trend
+      final trendData = jsonData['monthlyTrend'] as Map<String, dynamic>;
+      _monthlyTrend = MonthlyTrendModel(
+        data: (trendData['data'] as List)
+            .map((data) => (data as num).toDouble())
+            .toList(),
+        labels: (trendData['labels'] as List)
+            .map((label) => label as String)
+            .toList(),
+      );
+      
+      _setState(FinancialHealthScoreViewState.loaded);
+    } catch (e) {
+      _errorMessage = 'Failed to load financial health data from JSON: ${e.toString()}';
+      _setState(FinancialHealthScoreViewState.error);
+    }
+  }
+
+  // Helper method to parse color from JSON
+  Color _parseColor(Map<String, dynamic> colorJson) {
+    return Color(colorJson['value'] as int);
+  }
+
+  // Helper method to parse icon from JSON
+  IconData _parseIcon(Map<String, dynamic> iconJson) {
+    return IconData(iconJson['codePoint'] as int, fontFamily: iconJson['fontFamily'] as String);
+  }
   
   // Refresh data
   Future<void> refreshData() async {

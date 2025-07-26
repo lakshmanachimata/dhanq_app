@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import '../models/financial_health_score_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FinancialHealthScoreService {
   // Simulate API delay
@@ -8,103 +10,125 @@ class FinancialHealthScoreService {
     await Future.delayed(const Duration(milliseconds: 800));
   }
 
+  // Load financial health score data from JSON file
+  Future<Map<String, dynamic>> _loadFinancialHealthScoreData() async {
+    try {
+      final jsonString = await rootBundle.loadString('assets/financial_health_score.json');
+      final jsonData = json.decode(jsonString);
+      return jsonData;
+    } catch (e) {
+      print('Failed to load financial health score data: $e');
+      // Return fallback data if JSON loading fails
+      return _getFallbackData();
+    }
+  }
+
+  // Fallback data if JSON loading fails
+  Map<String, dynamic> _getFallbackData() {
+    return {
+      'financialHealthScore': {
+        'score': 87,
+        'maxScore': 100,
+        'status': 'Good',
+        'statusColor': {
+          'value': 4280391411,
+          'alpha': 255,
+          'red': 34,
+          'green': 197,
+          'blue': 94,
+          'opacity': 1.0
+        },
+        'description': "Your financial health is on the right track, with some opportunities for improvement."
+      }
+    };
+  }
+
+  // Helper method to convert JSON color to Flutter Color
+  Color _parseColor(Map<String, dynamic> colorJson) {
+    return Color(colorJson['value'] as int);
+  }
+
+  // Helper method to convert JSON icon to Flutter IconData
+  IconData _parseIcon(Map<String, dynamic> iconJson) {
+    return IconData(iconJson['codePoint'] as int, fontFamily: iconJson['fontFamily'] as String);
+  }
+
   Future<FinancialHealthScoreModel> getFinancialHealthScore() async {
     await _simulateDelay();
+    
+    final jsonData = await _loadFinancialHealthScoreData();
+    final healthScoreData = jsonData['financialHealthScore'] as Map<String, dynamic>;
+    
     return FinancialHealthScoreModel(
-      score: 87,
-      maxScore: 100,
-      status: 'Good',
-      statusColor: Colors.green,
-      description: "Your financial health is on the right track, with some opportunities for improvement.",
+      score: healthScoreData['score'] as int,
+      maxScore: healthScoreData['maxScore'] as int,
+      status: healthScoreData['status'] as String,
+      statusColor: _parseColor(healthScoreData['statusColor'] as Map<String, dynamic>),
+      description: healthScoreData['description'] as String,
     );
   }
 
   Future<List<KeyMetricModel>> getKeyMetrics() async {
     await _simulateDelay();
-    return [
-      KeyMetricModel(
-        label: 'Savings Rate',
-        value: '18%',
-        trend: '+3.5%',
-        isPositiveTrend: true,
-        icon: Icons.savings,
-      ),
-      KeyMetricModel(
-        label: 'Debt-to-Income',
-        value: '22%',
-        trend: '-2.1%',
-        isPositiveTrend: true, // Lower is better for debt-to-income
-        icon: Icons.description,
-      ),
-      KeyMetricModel(
-        label: 'Investment Growth',
-        value: '+12.3%',
-        trend: '+1.8%',
-        isPositiveTrend: true,
-        icon: Icons.trending_up,
-      ),
-      KeyMetricModel(
-        label: 'Emergency Fund',
-        value: '5 months',
-        status: 'Neutral',
-        isPositiveTrend: false,
-        icon: Icons.savings,
-      ),
-    ];
+    
+    final jsonData = await _loadFinancialHealthScoreData();
+    final keyMetricsData = jsonData['keyMetrics'] as List;
+    
+    return keyMetricsData
+        .map((metric) => KeyMetricModel(
+              label: metric['label'] as String,
+              value: metric['value'] as String,
+              trend: metric['trend'] as String?,
+              isPositiveTrend: metric['isPositiveTrend'] as bool,
+              icon: _parseIcon(metric['icon'] as Map<String, dynamic>),
+              status: metric['status'] as String?,
+            ))
+        .toList();
   }
 
   Future<List<ScoreBreakdownModel>> getScoreBreakdown() async {
     await _simulateDelay();
-    return [
-      ScoreBreakdownModel(
-        category: 'Savings & Investments',
-        percentage: 92,
-        color: Colors.blue,
-      ),
-      ScoreBreakdownModel(
-        category: 'Debt Management',
-        percentage: 83,
-        color: Colors.orange,
-      ),
-      ScoreBreakdownModel(
-        category: 'Spending Habits',
-        percentage: 72,
-        color: Colors.red,
-      ),
-      ScoreBreakdownModel(
-        category: 'Future Planning',
-        percentage: 88,
-        color: Colors.blue,
-      ),
-    ];
+    
+    final jsonData = await _loadFinancialHealthScoreData();
+    final breakdownData = jsonData['scoreBreakdown'] as List;
+    
+    return breakdownData
+        .map((breakdown) => ScoreBreakdownModel(
+              category: breakdown['category'] as String,
+              percentage: (breakdown['percentage'] as num).toDouble(),
+              color: _parseColor(breakdown['color'] as Map<String, dynamic>),
+            ))
+        .toList();
   }
 
   Future<List<FinancialInsightModel>> getFinancialInsights() async {
     await _simulateDelay();
-    return [
-      FinancialInsightModel(
-        text: 'Increase emergency fund to 6 months of expenses',
-        icon: Icons.savings,
-        iconColor: const Color(0xFF1E3A8A),
-      ),
-      FinancialInsightModel(
-        text: 'Consider diversifying investment portfolio',
-        icon: Icons.trending_up,
-        iconColor: const Color(0xFF1E3A8A),
-      ),
-      FinancialInsightModel(
-        text: 'Maintain current debt repayment strategy',
-        icon: Icons.description,
-        iconColor: const Color(0xFF1E3A8A),
-      ),
-    ];
+    
+    final jsonData = await _loadFinancialHealthScoreData();
+    final insightsData = jsonData['financialInsights'] as List;
+    
+    return insightsData
+        .map((insight) => FinancialInsightModel(
+              text: insight['text'] as String,
+              icon: _parseIcon(insight['icon'] as Map<String, dynamic>),
+              iconColor: _parseColor(insight['iconColor'] as Map<String, dynamic>),
+            ))
+        .toList();
   }
 
   Future<MonthlyTrendModel> getMonthlyTrend() async {
     await _simulateDelay();
+    
+    final jsonData = await _loadFinancialHealthScoreData();
+    final trendData = jsonData['monthlyTrend'] as Map<String, dynamic>;
+    
     return MonthlyTrendModel(
-      data: [82, 84, 85, 86, 87],
-      labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      data: (trendData['data'] as List)
+          .map((data) => (data as num).toDouble())
+          .toList(),
+      labels: (trendData['labels'] as List)
+          .map((label) => label as String)
+          .toList(),
     );
   }
 
@@ -118,5 +142,11 @@ class FinancialHealthScoreService {
     await _simulateDelay();
     // Simulate getting detailed insight
     print('Getting detailed insight for $insightType');
+  }
+
+  // Load all financial health score data at once
+  Future<Map<String, dynamic>> getAllFinancialHealthScoreData() async {
+    await _simulateDelay();
+    return await _loadFinancialHealthScoreData();
   }
 } 
