@@ -9,6 +9,7 @@ import '../viewmodels/home_viewmodel.dart';
 import 'asset_management_screen.dart';
 import 'smart_investor_screen.dart';
 import 'debt_doctor_screen.dart';
+import 'tax_whisperer_screen.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -462,6 +463,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const DebtDoctorScreen(),
+            ),
+          );
+          break;
+        case 'Tax Whisperer':
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const TaxWhispererScreen(),
             ),
           );
           break;
