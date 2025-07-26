@@ -301,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           GestureDetector(
-            onTap: viewModel.startVoiceListening,
+            onTap: () => viewModel.startVoiceListening(context),
             child: const Icon(Icons.mic, color: Colors.grey),
           ),
         ],

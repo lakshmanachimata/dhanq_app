@@ -5,6 +5,7 @@ import '../models/financial_service_model.dart';
 import '../models/home_data_model.dart';
 import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
+import '../utils/permission_helper.dart';
 
 enum HomeViewState { initial, loading, loaded, error }
 
@@ -73,15 +74,25 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   // Start voice listening
-  void startVoiceListening() {
-    _isListening = true;
-    notifyListeners();
-
-    // Simulate voice processing
-    Future.delayed(const Duration(seconds: 2), () {
-      _isListening = false;
+  void startVoiceListening(BuildContext context) async {
+    // TODO: Implement voice listening logic
+    // get microphone permission
+    //write code to get microphone permission
+    final microphonePermission = await PermissionHelper.getMicrophonePermission(
+      context,
+    );
+    // if permission is granted, start listening
+    // if permission is not granted, show a dialog to the user to grant permission
+    if (microphonePermission) {
+      _isListening = true;
       notifyListeners();
-    });
+
+      // Simulate voice processing
+      Future.delayed(const Duration(seconds: 2), () {
+        _isListening = false;
+        notifyListeners();
+      });
+    }
   }
 
   // Handle service selection
