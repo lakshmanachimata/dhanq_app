@@ -1,112 +1,170 @@
 import 'dart:async';
-import '../models/bachat_guru_model.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import '../models/bachat_guru_model.dart';
 
 class BachatGuruService {
   Future<void> _simulateDelay() async {
     await Future.delayed(const Duration(milliseconds: 800));
   }
 
+  // Load Bachat Guru data from JSON file
+  Future<Map<String, dynamic>> _loadBachatGuruData() async {
+    try {
+      // Load JSON from url
+      final response = await http.get(
+        Uri.parse(
+          'https://dhanqserv-43683479109.us-central1.run.app/api/rural_savings_summary/12345',
+        ),
+      );
+      final jsonString = response.body;
+      // final jsonString = await rootBundle.loadString('assets/bachat_guru.json');
+      final jsonData = json.decode(jsonString);
+      return jsonData;
+    } catch (e) {
+      print('Failed to load Bachat Guru data: $e');
+      // Return fallback data if JSON loading fails
+      return _getFallbackData();
+    }
+  }
+
+  // Fallback data if JSON loading fails
+  Map<String, dynamic> _getFallbackData() {
+    return {
+      'savingsSummary': {
+        'totalSavings': 4500.0,
+        'progress': 3,
+        'goal': 10,
+        'status': 'Growing steadily!',
+        'streakCount': 3,
+      },
+      'savingsTips': [
+        {
+          'title': 'Small Daily Savings',
+          'description': 'Save ₹20 from your daily tea budget',
+          'color': {
+            'value': 4294967244,
+            'alpha': 255,
+            'red': 255,
+            'green': 249,
+            'blue': 196,
+            'opacity': 1.0,
+          },
+        },
+      ],
+    };
+  }
+
+  // Helper method to convert JSON icon to Flutter IconData
+  IconData _parseIcon(Map<String, dynamic> iconJson) {
+    return IconData(
+      iconJson['codePoint'] as int,
+      fontFamily: iconJson['fontFamily'] as String,
+    );
+  }
+
+  // Helper method to parse color from JSON
+  Color _parseColor(Map<String, dynamic> colorJson) {
+    return Color(colorJson['value'] as int);
+  }
+
   Future<SavingsSummaryModel> getSavingsSummary() async {
     await _simulateDelay();
+
+    final jsonData = await _loadBachatGuruData();
+    final savingsSummaryData =
+        jsonData['savingsSummary'] as Map<String, dynamic>;
+
     return SavingsSummaryModel(
-      totalSavings: 4500.0,
-      progress: 3,
-      goal: 10,
-      status: 'Growing steadily!',
-      streakCount: 3,
+      totalSavings: (savingsSummaryData['totalSavings'] as num).toDouble(),
+      progress: savingsSummaryData['progress'] as int,
+      goal: savingsSummaryData['goal'] as int,
+      status: savingsSummaryData['status'] as String,
+      streakCount: savingsSummaryData['streakCount'] as int,
     );
   }
 
   Future<List<SavingsTipModel>> getSavingsTips() async {
     await _simulateDelay();
-    return [
-      SavingsTipModel(
-        title: 'Small Daily Savings',
-        description: 'Save ₹20 from your daily tea budget',
-        color: const Color(0xFFFFF9C4),
-      ),
-      SavingsTipModel(
-        title: 'Weekly Saving Rule',
-        description: 'Try the 50-30-20 rule for your farm income',
-        color: const Color(0xFFFFEBEE),
-      ),
-    ];
+
+    final jsonData = await _loadBachatGuruData();
+    final savingsTipsData = jsonData['savingsTips'] as List;
+
+    return savingsTipsData
+        .map(
+          (tip) => SavingsTipModel(
+            title: tip['title'] as String,
+            description: tip['description'] as String,
+            color: _parseColor(tip['color'] as Map<String, dynamic>),
+          ),
+        )
+        .toList();
   }
 
   Future<List<SavingsOptionModel>> getSavingsOptions() async {
     await _simulateDelay();
-    return [
-      SavingsOptionModel(
-        name: 'Post Office Monthly Scheme',
-        minAmount: '₹100',
-        returns: '7.1%',
-        period: '1-5 yrs',
-        icon: Icons.mail,
-        color: const Color(0xFFFFEBEE),
-      ),
-      SavingsOptionModel(
-        name: 'Co-op Bank Recurring Deposit',
-        minAmount: '₹50',
-        returns: '6.5%',
-        period: '6-36 mos',
-        icon: Icons.account_balance,
-        color: const Color(0xFFFFF3E0),
-      ),
-    ];
+
+    final jsonData = await _loadBachatGuruData();
+    final savingsOptionsData = jsonData['savingsOptions'] as List;
+
+    return savingsOptionsData
+        .map(
+          (option) => SavingsOptionModel(
+            name: option['name'] as String,
+            minAmount: option['minAmount'] as String,
+            returns: option['returns'] as String,
+            period: option['period'] as String,
+            icon: _parseIcon(option['icon'] as Map<String, dynamic>),
+            color: _parseColor(option['color'] as Map<String, dynamic>),
+          ),
+        )
+        .toList();
   }
 
   Future<List<CommunityChallengeModel>> getCommunityChallenges() async {
     await _simulateDelay();
-    return [
-      CommunityChallengeModel(
-        title: 'Bicycle Challenge',
-        description: 'Save enough for a new bicycle in 3 months',
-        targetAmount: 8000.0,
-        savedAmount: 3200.0,
-        months: 3,
-        icon: Icons.directions_bike,
-        color: const Color(0xFFFFEBEE),
-      ),
-      CommunityChallengeModel(
-        title: 'Education Fund',
-        description: "Save for children's education fees",
-        targetAmount: 12000.0,
-        savedAmount: 4000.0,
-        months: 6,
-        icon: Icons.menu_book,
-        color: const Color(0xFFFFF9C4),
-      ),
-      CommunityChallengeModel(
-        title: 'Monsoon Emergency',
-        description: 'Be prepared for the rainy season',
-        targetAmount: 5000.0,
-        savedAmount: 1000.0,
-        months: 2,
-        icon: Icons.umbrella,
-        color: const Color(0xFFFFEBEE),
-      ),
-    ];
+
+    final jsonData = await _loadBachatGuruData();
+    final communityChallengesData = jsonData['communityChallenges'] as List;
+
+    return communityChallengesData
+        .map(
+          (challenge) => CommunityChallengeModel(
+            title: challenge['title'] as String,
+            description: challenge['description'] as String,
+            targetAmount: (challenge['targetAmount'] as num).toDouble(),
+            savedAmount: (challenge['savedAmount'] as num).toDouble(),
+            months: challenge['months'] as int,
+            icon: _parseIcon(challenge['icon'] as Map<String, dynamic>),
+            color: _parseColor(challenge['color'] as Map<String, dynamic>),
+          ),
+        )
+        .toList();
   }
 
   Future<List<AchievementModel>> getAchievements() async {
     await _simulateDelay();
-    return [
-      AchievementModel(
-        title: 'First Saver',
-        icon: Icons.emoji_events,
-        color: const Color(0xFF8B4513),
-      ),
-      AchievementModel(
-        title: 'Weekly Streak',
-        icon: Icons.emoji_events,
-        color: const Color(0xFFB5A642),
-      ),
-      AchievementModel(
-        title: 'Goal Achiever',
-        icon: Icons.emoji_events,
-        color: const Color(0xFF8B4513),
-      ),
-    ];
+
+    final jsonData = await _loadBachatGuruData();
+    final achievementsData = jsonData['achievements'] as List;
+
+    return achievementsData
+        .map(
+          (achievement) => AchievementModel(
+            title: achievement['title'] as String,
+            icon: _parseIcon(achievement['icon'] as Map<String, dynamic>),
+            color: _parseColor(achievement['color'] as Map<String, dynamic>),
+          ),
+        )
+        .toList();
   }
-} 
+
+  // Load all Bachat Guru data at once
+  Future<Map<String, dynamic>> getAllBachatGuruData() async {
+    await _simulateDelay();
+    return await _loadBachatGuruData();
+  }
+}

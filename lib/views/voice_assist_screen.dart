@@ -41,9 +41,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
               child: Column(
                 children: [
                   _buildHeader(viewModel),
-                  Expanded(
-                    child: _buildContent(viewModel),
-                  ),
+                  Expanded(child: _buildContent(viewModel)),
                   _buildVoiceInput(viewModel),
                 ],
               ),
@@ -124,9 +122,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
   Widget _buildContent(VoiceAssistViewModel viewModel) {
     if (viewModel.state == VoiceAssistViewState.loading) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: Color(0xFF1E3A8A),
-        ),
+        child: CircularProgressIndicator(color: Color(0xFF1E3A8A)),
       );
     }
 
@@ -135,11 +131,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.grey,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
             const Text(
               'Something went wrong',
@@ -180,7 +172,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
   Widget _buildBudgetSummary(VoiceAssistViewModel viewModel) {
     if (viewModel.budgetSummary == null) return const SizedBox.shrink();
     final summary = viewModel.budgetSummary!;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -300,7 +292,10 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
 
   Widget _buildChatMessages(VoiceAssistViewModel viewModel) {
     return Column(
-      children: viewModel.chatMessages.map((message) => _buildChatBubble(message)).toList(),
+      children:
+          viewModel.chatMessages
+              .map((message) => _buildChatBubble(message))
+              .toList(),
     );
   }
 
@@ -318,31 +313,34 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
                 color: const Color(0xFF1E3A8A),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(
-                Icons.mic,
-                color: Colors.white,
-                size: 16,
-              ),
+              child: const Icon(Icons.mic, color: Colors.white, size: 16),
             ),
             const SizedBox(width: 8),
           ],
           Expanded(
             child: Column(
-              crossAxisAlignment: message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  message.isUser
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: message.isUser ? const Color(0xFF1E3A8A) : Colors.white,
+                    color:
+                        message.isUser ? const Color(0xFF1E3A8A) : Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: message.isUser ? null : [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
+                    boxShadow:
+                        message.isUser
+                            ? null
+                            : [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,14 +360,21 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
                               Icon(
                                 message.categoryIcon,
                                 size: 16,
-                                color: message.isUser ? Colors.white70 : const Color(0xFF1E3A8A),
+                                color:
+                                    message.isUser
+                                        ? Colors.white70
+                                        : const Color(0xFF1E3A8A),
                               ),
-                            if (message.categoryIcon != null) const SizedBox(width: 4),
+                            if (message.categoryIcon != null)
+                              const SizedBox(width: 4),
                             Text(
                               message.category!,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: message.isUser ? Colors.white70 : const Color(0xFF1E3A8A),
+                                color:
+                                    message.isUser
+                                        ? Colors.white70
+                                        : const Color(0xFF1E3A8A),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -382,10 +387,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
                 const SizedBox(height: 4),
                 Text(
                   _formatTime(message.timestamp),
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -399,11 +401,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
                 color: const Color(0xFF1E3A8A),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(
-                Icons.mic,
-                color: Colors.white,
-                size: 16,
-              ),
+              child: const Icon(Icons.mic, color: Colors.white, size: 16),
             ),
           ],
         ],
@@ -414,7 +412,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
   Widget _buildWeeklySpending(VoiceAssistViewModel viewModel) {
     if (viewModel.weeklySpending == null) return const SizedBox.shrink();
     final weekly = viewModel.weeklySpending!;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -446,21 +444,29 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: weekly.dailySpending.map((day) => _buildSpendingBar(day)).toList(),
+              children:
+                  weekly.dailySpending
+                      .map((day) => _buildSpendingBar(day))
+                      .toList(),
             ),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              for (String day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
+              for (String day in [
+                'Mon',
+                'Tue',
+                'Wed',
+                'Thu',
+                'Fri',
+                'Sat',
+                'Sun',
+              ])
                 Expanded(
                   child: Text(
                     day,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ),
             ],
@@ -471,10 +477,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
               Expanded(
                 child: Text(
                   'Highest day: ${weekly.highestDay} (${weekly.formattedHighestAmount})',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
               ),
             ],
@@ -482,10 +485,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
           const SizedBox(height: 4),
           Text(
             'Main category: ${weekly.mainCategory}',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
         ],
       ),
@@ -525,7 +525,10 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
               child: TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  hintText: viewModel.isListening ? 'Listening...' : 'Tap to speak...',
+                  hintText:
+                      viewModel.isListening
+                          ? 'Listening...'
+                          : 'Tap to speak...',
                   border: InputBorder.none,
                   hintStyle: TextStyle(color: Colors.grey[500]),
                 ),
@@ -545,7 +548,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
               if (viewModel.isListening) {
                 viewModel.stopListening();
               } else {
-                viewModel.startListening();
+                viewModel.startListening(context);
                 // Simulate voice input for demo
                 Future.delayed(const Duration(seconds: 2), () {
                   viewModel.stopListening();
@@ -558,7 +561,10 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: viewModel.isListening ? Colors.red : const Color(0xFF1E3A8A),
+                color:
+                    viewModel.isListening
+                        ? Colors.red
+                        : const Color(0xFF1E3A8A),
                 borderRadius: BorderRadius.circular(28),
               ),
               child: Icon(
@@ -576,7 +582,7 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
   String _formatTime(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {
@@ -599,4 +605,4 @@ class _VoiceAssistScreenState extends State<VoiceAssistScreen> {
       }
     });
   }
-} 
+}

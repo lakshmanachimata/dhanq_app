@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import '../models/vyapar_margdarshak_model.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+
+import '../models/vyapar_margdarshak_model.dart';
 
 class VyaparMargdarshakService {
   // Simulate API delay
@@ -13,7 +15,16 @@ class VyaparMargdarshakService {
   // Load Vyapar Margdarshak data from JSON file
   Future<Map<String, dynamic>> _loadVyaparMargdarshakData() async {
     try {
-      final jsonString = await rootBundle.loadString('assets/vyapar_margdarshak.json');
+      // Load JSON from http URL
+      final response = await http.get(
+        Uri.parse(
+          'https://dhanqserv-43683479109.us-central1.run.app/api/rural_business_summary/12345',
+        ),
+      );
+      final jsonString = response.body;
+      // final jsonString = await rootBundle.loadString(
+      //   'assets/vyapar_margdarshak.json',
+      // );
       final jsonData = json.decode(jsonString);
       return jsonData;
     } catch (e) {
@@ -30,18 +41,14 @@ class VyaparMargdarshakService {
         'sales': 5200.0,
         'expenses': 1800.0,
         'profit': 3400.0,
-        'date': '2024-01-15'
+        'date': '2024-01-15',
       },
       'monthlyProfit': {
         'profitData': [
-          {
-            'month': 'Jan',
-            'profit': 2800.0,
-            'isCurrentMonth': false
-          }
+          {'month': 'Jan', 'profit': 2800.0, 'isCurrentMonth': false},
         ],
-        'totalProfit': 2800.0
-      }
+        'totalProfit': 2800.0,
+      },
     };
   }
 
@@ -60,10 +67,11 @@ class VyaparMargdarshakService {
 
   Future<BusinessSummaryModel> getTodaySummary() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
-    final businessSummaryData = jsonData['businessSummary'] as Map<String, dynamic>;
-    
+    final businessSummaryData =
+        jsonData['businessSummary'] as Map<String, dynamic>;
+
     return BusinessSummaryModel(
       sales: (businessSummaryData['sales'] as num).toDouble(),
       expenses: (businessSummaryData['expenses'] as num).toDouble(),
@@ -74,20 +82,23 @@ class VyaparMargdarshakService {
 
   Future<MonthlyProfitModel> getMonthlyProfit() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
     final monthlyProfitData = jsonData['monthlyProfit'] as Map<String, dynamic>;
-    
+
     // Parse profit data
     final profitDataList = monthlyProfitData['profitData'] as List;
-    final profitData = profitDataList
-        .map((data) => ProfitDataModel(
-              month: data['month'] as String,
-              profit: (data['profit'] as num).toDouble(),
-              isCurrentMonth: data['isCurrentMonth'] as bool? ?? false,
-            ))
-        .toList();
-    
+    final profitData =
+        profitDataList
+            .map(
+              (data) => ProfitDataModel(
+                month: data['month'] as String,
+                profit: (data['profit'] as num).toDouble(),
+                isCurrentMonth: data['isCurrentMonth'] as bool? ?? false,
+              ),
+            )
+            .toList();
+
     return MonthlyProfitModel(
       profitData: profitData,
       totalProfit: (monthlyProfitData['totalProfit'] as num).toDouble(),
@@ -96,47 +107,51 @@ class VyaparMargdarshakService {
 
   Future<List<QuickActionModel>> getQuickActions() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
     final quickActionsData = jsonData['quickActions'] as List;
-    
+
     return quickActionsData
-        .map((action) => QuickActionModel(
-              title: action['title'] as String,
-              icon: _parseIcon(action['icon'] as Map<String, dynamic>),
-              action: action['action'] as String,
-            ))
+        .map(
+          (action) => QuickActionModel(
+            title: action['title'] as String,
+            icon: _parseIcon(action['icon'] as Map<String, dynamic>),
+            action: action['action'] as String,
+          ),
+        )
         .toList();
   }
 
   Future<BusinessGrowthModel> getBusinessGrowth() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
-    final businessGrowthData = jsonData['businessGrowth'] as Map<String, dynamic>;
-    
+    final businessGrowthData =
+        jsonData['businessGrowth'] as Map<String, dynamic>;
+
     // Parse growth metrics
     final metricsData = businessGrowthData['metrics'] as List;
-    final metrics = metricsData
-        .map((metric) => GrowthMetricModel(
-              title: metric['title'] as String,
-              percentage: (metric['percentage'] as num).toDouble(),
-              comparison: metric['comparison'] as String,
-              icon: _parseIcon(metric['icon'] as Map<String, dynamic>),
-            ))
-        .toList();
-    
-    return BusinessGrowthModel(
-      metrics: metrics,
-    );
+    final metrics =
+        metricsData
+            .map(
+              (metric) => GrowthMetricModel(
+                title: metric['title'] as String,
+                percentage: (metric['percentage'] as num).toDouble(),
+                comparison: metric['comparison'] as String,
+                icon: _parseIcon(metric['icon'] as Map<String, dynamic>),
+              ),
+            )
+            .toList();
+
+    return BusinessGrowthModel(metrics: metrics);
   }
 
   Future<LoanOfferModel> getLoanOffer() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
     final loanOfferData = jsonData['loanOffer'] as Map<String, dynamic>;
-    
+
     return LoanOfferModel(
       title: loanOfferData['title'] as String,
       description: loanOfferData['description'] as String,
@@ -177,28 +192,29 @@ class VyaparMargdarshakService {
 
   Future<Map<String, dynamic>> getBusinessHealthMetrics() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
-    final businessHealthData = jsonData['businessHealthMetrics'] as Map<String, dynamic>;
-    
+    final businessHealthData =
+        jsonData['businessHealthMetrics'] as Map<String, dynamic>;
+
     return businessHealthData;
   }
 
   Future<List<Map<String, dynamic>>> getFinanceOptions() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
     final financeOptionsData = jsonData['financeOptions'] as List;
-    
+
     return financeOptionsData.cast<Map<String, dynamic>>();
   }
 
   Future<List<Map<String, dynamic>>> getInventoryData() async {
     await _simulateDelay();
-    
+
     final jsonData = await _loadVyaparMargdarshakData();
     final inventoryData = jsonData['inventoryData'] as List;
-    
+
     return inventoryData.cast<Map<String, dynamic>>();
   }
 
@@ -207,4 +223,4 @@ class VyaparMargdarshakService {
     await _simulateDelay();
     return await _loadVyaparMargdarshakData();
   }
-} 
+}

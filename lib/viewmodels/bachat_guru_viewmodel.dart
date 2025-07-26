@@ -63,6 +63,91 @@ class BachatGuruViewModel extends ChangeNotifier {
     }
   }
 
+  // Load all data from JSON at once
+  Future<void> loadAllDataFromJSON() async {
+    if (_state == BachatGuruViewState.loading) return;
+    _setState(BachatGuruViewState.loading);
+    
+    try {
+      final jsonData = await _service.getAllBachatGuruData();
+      
+      // Load savings summary
+      final savingsSummaryData = jsonData['savingsSummary'] as Map<String, dynamic>;
+      _savingsSummary = SavingsSummaryModel(
+        totalSavings: (savingsSummaryData['totalSavings'] as num).toDouble(),
+        progress: savingsSummaryData['progress'] as int,
+        goal: savingsSummaryData['goal'] as int,
+        status: savingsSummaryData['status'] as String,
+        streakCount: savingsSummaryData['streakCount'] as int,
+      );
+      
+      // Load savings tips
+      final savingsTipsData = jsonData['savingsTips'] as List;
+      _savingsTips = savingsTipsData
+          .map((tip) => SavingsTipModel(
+                title: tip['title'] as String,
+                description: tip['description'] as String,
+                color: _parseColor(tip['color'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      // Load savings options
+      final savingsOptionsData = jsonData['savingsOptions'] as List;
+      _savingsOptions = savingsOptionsData
+          .map((option) => SavingsOptionModel(
+                name: option['name'] as String,
+                minAmount: option['minAmount'] as String,
+                returns: option['returns'] as String,
+                period: option['period'] as String,
+                icon: _parseIcon(option['icon'] as Map<String, dynamic>),
+                color: _parseColor(option['color'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      // Load community challenges
+      final communityChallengesData = jsonData['communityChallenges'] as List;
+      _communityChallenges = communityChallengesData
+          .map((challenge) => CommunityChallengeModel(
+                title: challenge['title'] as String,
+                description: challenge['description'] as String,
+                targetAmount: (challenge['targetAmount'] as num).toDouble(),
+                savedAmount: (challenge['savedAmount'] as num).toDouble(),
+                months: challenge['months'] as int,
+                icon: _parseIcon(challenge['icon'] as Map<String, dynamic>),
+                color: _parseColor(challenge['color'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      // Load achievements
+      final achievementsData = jsonData['achievements'] as List;
+      _achievements = achievementsData
+          .map((achievement) => AchievementModel(
+                title: achievement['title'] as String,
+                icon: _parseIcon(achievement['icon'] as Map<String, dynamic>),
+                color: _parseColor(achievement['color'] as Map<String, dynamic>),
+              ))
+          .toList();
+      
+      _setState(BachatGuruViewState.loaded);
+    } catch (e) {
+      _errorMessage = 'Failed to load Bachat Guru data from JSON: ${e.toString()}';
+      _setState(BachatGuruViewState.error);
+    }
+  }
+
+  // Helper method to parse icon from JSON
+  IconData _parseIcon(Map<String, dynamic> iconJson) {
+    return IconData(
+      iconJson['codePoint'] as int,
+      fontFamily: iconJson['fontFamily'] as String,
+    );
+  }
+
+  // Helper method to parse color from JSON
+  Color _parseColor(Map<String, dynamic> colorJson) {
+    return Color(colorJson['value'] as int);
+  }
+
   // Refresh data
   Future<void> refreshData() async {
     _savingsSummary = null;
