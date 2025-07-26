@@ -19,13 +19,19 @@ class AssetManagementModel {
   });
 
   factory AssetManagementModel.fromJson(Map<String, dynamic> json) {
+    // Convert all values in allocation to double, even if they are int
+    final rawAllocation = json['allocation'] as Map<String, dynamic>;
+    final allocation = rawAllocation.map(
+      (key, value) =>
+          MapEntry(key, (value is int) ? value.toDouble() : value as double),
+    );
     return AssetManagementModel(
       portfolio: PortfolioModel.fromJson(json['portfolio']),
       assets:
           (json['assets'] as List)
               .map((asset) => AssetModel.fromJson(asset))
               .toList(),
-      allocation: Map<String, double>.from(json['allocation']),
+      allocation: allocation,
       recentTransactions:
           (json['recentTransactions'] as List)
               .map((transaction) => TransactionModel.fromJson(transaction))

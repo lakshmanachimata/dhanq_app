@@ -395,7 +395,7 @@ class _SmartInvestorScreenState extends State<SmartInvestorScreen> {
   }
 
   Widget _buildMarketSentimentCard(
-    MarketSentimentModel sentiment,
+    MarketSentimentModelLegacy sentiment,
     SmartInvestorViewModel viewModel,
   ) {
     return Container(
