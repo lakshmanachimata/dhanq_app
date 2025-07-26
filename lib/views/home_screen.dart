@@ -1,3 +1,4 @@
+import 'package:dhanq_app/views/bachat_guru_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +15,7 @@ import 'kisaan_saathi_screen.dart';
 import 'login_screen.dart';
 import 'smart_investor_screen.dart';
 import 'tax_whisperer_screen.dart';
+import 'vyapar_margdarshak_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -484,9 +486,19 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 'Kisaan Saathi':
         Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const KisaanSaathiScreen()),
+        );
+        break;
+      case 'Vyapar Margdarshak':
+        Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const KisaanSaathiScreen(),
+            builder: (context) => const VyaparMargdarshakScreen(),
           ),
+        );
+        break;
+      case 'Bachat Guru':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const BachatGuruScreen()),
         );
         break;
       // Add other service navigations here

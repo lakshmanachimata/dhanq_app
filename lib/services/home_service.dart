@@ -120,32 +120,11 @@ class HomeService {
           color: Colors.green,
         ),
         FinancialServiceModel(
-          id: 'farm_finance',
-          name: 'Farm Finance Optimization',
-          description: 'Optimize farm-related finances',
-          icon: Icons.trending_up,
-          color: Colors.blue,
-        ),
-        FinancialServiceModel(
-          id: 'gov_schemes',
-          name: 'Government Scheme Integration',
-          description: 'Access government financial schemes',
-          icon: Icons.account_balance,
-          color: Colors.orange,
-        ),
-        FinancialServiceModel(
-          id: 'weather_analysis',
-          name: 'Weather & Market Impact Analysis',
-          description: 'Analyze weather impact on markets',
-          icon: Icons.cloud,
-          color: Colors.cyan,
-        ),
-        FinancialServiceModel(
           id: 'vyapar_margdarshak',
           name: 'Vyapar Margdarshak',
           description: 'Business guidance and support',
           icon: Icons.store,
-          color: Colors.purple,
+          color: Colors.blue,
         ),
         FinancialServiceModel(
           id: 'bachat_guru',
