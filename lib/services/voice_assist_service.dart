@@ -200,6 +200,102 @@ class VoiceAssistService {
           );
           return 'Error: ${response.statusCode} - ${response.body}';
         }
+      } else if (query.toLowerCase().contains('credit')) {
+        // Similar implementation for budget queries
+        final payload = {
+          'jsonrpc': '2.0',
+          'id': 2,
+          'method': 'tools/call',
+          'params': {'name': 'fetch_credit_report', 'arguments': {}},
+        };
+
+        final jsonBody = jsonEncode(payload);
+
+        final response = await http.post(
+          Uri.parse(
+            'https://fi-mcp-mock-server-43683479109.us-central1.run.app/mcp/stream',
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Mcp-Session-Id':
+                'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
+          },
+          body: jsonBody,
+        );
+
+        if (response.statusCode == 200) {
+          return response.body;
+        } else {
+          debugPrint(
+            'MCP EPF API Error: ${response.statusCode} - ${response.body}',
+          );
+          return 'Error: ${response.statusCode} - ${response.body}';
+        }
+      } else if (query.toLowerCase().contains('net') ||
+          query.toLowerCase().contains('worth') ||
+          query.toLowerCase().contains('net worth')) {
+        // Similar implementation for budget queries
+        final payload = {
+          'jsonrpc': '2.0',
+          'id': 2,
+          'method': 'tools/call',
+          'params': {'name': 'fetch_mf_transactions', 'arguments': {}},
+        };
+
+        final jsonBody = jsonEncode(payload);
+
+        final response = await http.post(
+          Uri.parse(
+            'https://fi-mcp-mock-server-43683479109.us-central1.run.app/mcp/stream',
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Mcp-Session-Id':
+                'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
+          },
+          body: jsonBody,
+        );
+
+        if (response.statusCode == 200) {
+          return response.body;
+        } else {
+          debugPrint(
+            'MCP EPF API Error: ${response.statusCode} - ${response.body}',
+          );
+          return 'Error: ${response.statusCode} - ${response.body}';
+        }
+      } else if (query.toLowerCase().contains('mutual') ||
+          query.toLowerCase().contains('mutual funds')) {
+        // Similar implementation for budget queries
+        final payload = {
+          'jsonrpc': '2.0',
+          'id': 2,
+          'method': 'tools/call',
+          'params': {'name': 'fetch_credit_report', 'arguments': {}},
+        };
+
+        final jsonBody = jsonEncode(payload);
+
+        final response = await http.post(
+          Uri.parse(
+            'https://fi-mcp-mock-server-43683479109.us-central1.run.app/mcp/stream',
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Mcp-Session-Id':
+                'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
+          },
+          body: jsonBody,
+        );
+
+        if (response.statusCode == 200) {
+          return response.body;
+        } else {
+          debugPrint(
+            'MCP EPF API Error: ${response.statusCode} - ${response.body}',
+          );
+          return 'Error: ${response.statusCode} - ${response.body}';
+        }
       }
 
       return null;
