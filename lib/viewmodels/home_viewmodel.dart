@@ -9,8 +9,8 @@ import '../models/home_data_model.dart';
 import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
 import '../services/voice_assist_service.dart';
-import '../utils/permission_helper.dart';
 import '../utils/bottom_sheet_helper.dart';
+import '../utils/permission_helper.dart';
 import '../widgets/epf_display_bottom_sheet.dart';
 import '../widgets/mcp_webview_bottom_sheet.dart';
 import '../widgets/transaction_display_bottom_sheet.dart';
@@ -98,39 +98,59 @@ class HomeViewModel extends ChangeNotifier {
 
   // Start voice listening
   Future<void> startVoiceListening(BuildContext context) async {
-    // First try to get permission through our helper
-    bool hasPermission = await PermissionHelper.getMicrophonePermission(
-      context,
-    );
+    try {
+      // First check if permission is already granted
+      bool hasPermission =
+          await PermissionHelper.isMicrophonePermissionGranted();
 
-    // If permission is still not granted, try to trigger it through speech_to_text
-    if (!hasPermission) {
-      try {
-        final speech = SpeechToText();
-        await speech.initialize(
-          onError: (error) {
-            debugPrint('Permission check error: $error');
-          },
-        );
-        // Try to start listening briefly to trigger permission
-        await speech.listen(
-          onResult: (result) {},
-          listenFor: const Duration(seconds: 1),
-        );
-        await speech.stop();
-        hasPermission = true;
-      } catch (e) {
-        debugPrint('Failed to trigger permission: $e');
+      if (!hasPermission) {
+        // Request permission through our helper
+        hasPermission = await PermissionHelper.getMicrophonePermission(context);
+      }
+
+      // If permission is still not granted, try to trigger it through speech_to_text
+      if (!hasPermission) {
+        try {
+          final speech = SpeechToText();
+          await speech.initialize(
+            onError: (error) {
+              debugPrint('Permission check error: $error');
+            },
+          );
+          // Try to start listening briefly to trigger permission
+          await speech.listen(
+            onResult: (result) {},
+            listenFor: const Duration(seconds: 1),
+          );
+          await speech.stop();
+
+          // Check permission again after trying speech_to_text
+          hasPermission =
+              await PermissionHelper.isMicrophonePermissionGranted();
+          debugPrint('Microphone permission granted, starting voice listening');
+        } catch (e) {
+          debugPrint('Failed to trigger permission: $e');
+          return;
+        }
+      }
+
+      if (!hasPermission) {
+        debugPrint('Microphone permission not granted after all attempts');
         return;
       }
+
+      // Permission is granted, proceed with voice listening
+      debugPrint('Microphone permission granted, starting voice listening');
+
+      _isListening = true;
+      notifyListeners();
+      // Start listening to audio and convert to text
+      await _listenAndTranscribe(context);
+    } catch (e) {
+      debugPrint('Error in startVoiceListening: $e');
+      _isListening = false;
+      notifyListeners();
     }
-
-    if (!hasPermission) return;
-
-    _isListening = true;
-    notifyListeners();
-    // Start listening to audio and convert to text
-    await _listenAndTranscribe(context);
   }
 
   Future<void> _listenAndTranscribe(BuildContext context) async {
@@ -276,10 +296,10 @@ class HomeViewModel extends ChangeNotifier {
           }
         }
       } else {
-            BottomSheetHelper.showNoDetailsFoundBottomSheet(context);
-            clearSearch();
-            setVoiceInput('', context);
-            searchController.text = ''; // Set text in the search input box
+        BottomSheetHelper.showNoDetailsFoundBottomSheet(context);
+        clearSearch();
+        setVoiceInput('', context);
+        searchController.text = ''; // Set text in the search input box
       }
     } catch (e) {
       debugPrint('Error processing MCP request: $e');
@@ -312,6 +332,11 @@ class HomeViewModel extends ChangeNotifier {
   // Get localized text
   String getLocalizedText(String englishText, String hindiText) {
     return _selectedLanguage == LanguageType.hindi ? hindiText : englishText;
+  }
+
+  // Reset microphone permission (for testing)
+  Future<void> resetMicrophonePermission() async {
+    await PermissionHelper.resetMicrophonePermission();
   }
 
   // Handle MCP WebView close
