@@ -272,6 +272,7 @@ class HomeViewModel extends ChangeNotifier {
       } else {
         clearSearch();
         setVoiceInput('', context);
+        searchController.text = ''; // Set text in the search input box
       }
     } catch (e) {
       debugPrint('Error processing MCP request: $e');
