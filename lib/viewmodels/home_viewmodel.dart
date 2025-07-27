@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:dhanq_app/models/voice_assist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -99,48 +101,66 @@ class HomeViewModel extends ChangeNotifier {
   // Start voice listening
   Future<void> startVoiceListening(BuildContext context) async {
     try {
-      // First check if permission is already granted
+      debugPrint('=== Starting voice listening process ===');
+
+      // Get detailed permission status first
+      await PermissionHelper.getDetailedMicrophoneStatus();
+
+      // Check if we already have permission
       bool hasPermission =
           await PermissionHelper.isMicrophonePermissionGranted();
+      debugPrint(
+        'Checking microphone permission status: ${await Permission.microphone.status}',
+      );
 
-      if (!hasPermission) {
-        // Request permission through our helper
-        hasPermission = await PermissionHelper.getMicrophonePermission(context);
+      if (Platform.isIOS) {
+        debugPrint('iOS permission is denied, but can be requested again');
       }
 
-      // If permission is still not granted, try to trigger it through speech_to_text
-      if (!hasPermission) {
-        try {
-          final speech = SpeechToText();
-          await speech.initialize(
-            onError: (error) {
-              debugPrint('Permission check error: $error');
-            },
-          );
-          // Try to start listening briefly to trigger permission
-          await speech.listen(
-            onResult: (result) {},
-            listenFor: const Duration(seconds: 1),
-          );
-          await speech.stop();
+      debugPrint('Initial hasPermission check: $hasPermission');
 
-          // Check permission again after trying speech_to_text
+      if (!hasPermission) {
+        debugPrint('Permission not granted, requesting permission...');
+
+        if (Platform.isIOS) {
+          // For iOS, directly try the inconsistency handler since it's the most reliable
+          debugPrint('Using iOS inconsistency handler directly...');
           hasPermission =
-              await PermissionHelper.isMicrophonePermissionGranted();
-          debugPrint('Microphone permission granted, starting voice listening');
-        } catch (e) {
-          debugPrint('Failed to trigger permission: $e');
-          return;
+              await PermissionHelper.handleIOSPermissionInconsistency(context);
+          debugPrint('iOS inconsistency handler result: $hasPermission');
+
+          // If inconsistency handler fails, try the quirk handler as fallback
+          if (!hasPermission) {
+            debugPrint('Inconsistency handler failed, trying quirk handler...');
+            hasPermission = await PermissionHelper.handleIOSPermissionQuirk(
+              context,
+            );
+            debugPrint('iOS quirk handler result: $hasPermission');
+          }
+        } else {
+          // For Android, use standard permission handling
+          hasPermission = await PermissionHelper.getMicrophonePermission(
+            context,
+          );
+          debugPrint('Android permission handling result: $hasPermission');
         }
+      } else {
+        debugPrint('Permission already granted, proceeding...');
       }
 
       if (!hasPermission) {
-        debugPrint('Microphone permission not granted after all attempts');
+        debugPrint(
+          '=== Microphone permission not granted after all attempts ===',
+        );
+        // Get final detailed status for debugging
+        await PermissionHelper.getDetailedMicrophoneStatus();
         return;
       }
 
       // Permission is granted, proceed with voice listening
-      debugPrint('Microphone permission granted, starting voice listening');
+      debugPrint(
+        '=== Microphone permission granted, starting voice listening ===',
+      );
 
       _isListening = true;
       notifyListeners();
@@ -210,6 +230,8 @@ class HomeViewModel extends ChangeNotifier {
             if (result.finalResult) {
               setVoiceInput(result.recognizedWords, context);
               stopListening();
+            } else {
+              debugPrint('Partial result: ${result.recognizedWords}');
             }
           },
           localeId: _selectedLanguage == LanguageType.hindi ? 'hi_IN' : 'en_US',
@@ -337,6 +359,16 @@ class HomeViewModel extends ChangeNotifier {
   // Reset microphone permission (for testing)
   Future<void> resetMicrophonePermission() async {
     await PermissionHelper.resetMicrophonePermission();
+  }
+
+  // Handle permanently denied permission
+  Future<bool> handlePermanentlyDeniedPermission(BuildContext context) async {
+    return await PermissionHelper.handlePermanentlyDeniedPermission(context);
+  }
+
+  // Debug all permissions
+  Future<void> debugAllPermissions() async {
+    await PermissionHelper.debugAllPermissions();
   }
 
   // Handle MCP WebView close
