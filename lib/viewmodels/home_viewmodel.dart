@@ -267,9 +267,63 @@ class HomeViewModel extends ChangeNotifier {
             setVoiceInput('', context);
           } else if (input.contains('portfolio')) {
             // Handle portfolio related voice input
+          } else {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              enableDrag: false,
+              builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'No details found',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            );
+            clearSearch();
+            setVoiceInput('', context);
+            searchController.text = ''; // Set text in the search input box
           }
         }
       } else {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              enableDrag: false,
+              builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'No details found',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            );
         clearSearch();
         setVoiceInput('', context);
         searchController.text = ''; // Set text in the search input box
