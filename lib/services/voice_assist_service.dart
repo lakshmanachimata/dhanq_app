@@ -135,27 +135,24 @@ class VoiceAssistService {
         // body: {"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"fetch_bank_transactions","arguments":{}}}
 
         final payload = {
-          'jsonrpc': '2.0',
-          'id': 1,
-          'method': 'tools/call',
-          'params': {'name': 'fetch_bank_transactions', 'arguments': {}},
+          "jsonrpc": "2.0",
+          "id": 1,
+          "method": "tools/call",
+          "params": {"name": "fetch_bank_transactions", "arguments": {}},
         };
 
         final jsonBody = jsonEncode(payload);
 
-        final headers = {
-          'Content-Type': 'application/json',
-          'Content-Length': jsonBody.length.toString(),
-          'Mcp-Session-Id': 'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
-        };
         debugPrint('Sending MCP request with payload: $payload');
-        debugPrint('Sending MCP request with headers: $headers');
 
         final response = await http.post(
           Uri.parse(
             'https://fi-mcp-mock-server-43683479109.us-central1.run.app/mcp/stream',
           ),
-          headers: headers,
+          headers: {
+            'Content-Type': 'application/json',
+            'Mcp-Session-Id': 'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
+          },
           body: jsonBody,
         );
 

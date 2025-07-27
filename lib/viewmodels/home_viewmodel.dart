@@ -1,5 +1,6 @@
 import 'package:dhanq_app/models/voice_assist_model.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/activity_model.dart';
@@ -9,6 +10,7 @@ import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
 import '../services/voice_assist_service.dart';
 import '../utils/permission_helper.dart';
+import '../widgets/mcp_webview_bottom_sheet.dart';
 
 enum HomeViewState { initial, loading, loaded, error }
 
@@ -25,6 +27,8 @@ class HomeViewModel extends ChangeNotifier {
   bool _onboardingCompleted = false;
   bool _isOnboardingLoading = false;
 
+  String mcpUrl =
+      'https://fi-mcp-mock-server-43683479109.us-central1.run.app/mockWebPage?sessionId=mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af';
   // Getters
   HomeViewState get state => _state;
   HomeDataModel? get homeData => _homeData;
@@ -91,31 +95,89 @@ class HomeViewModel extends ChangeNotifier {
 
   // Start voice listening
   Future<void> startVoiceListening(BuildContext context) async {
-    final hasPermission = await PermissionHelper.getMicrophonePermission(
+    // First try to get permission through our helper
+    bool hasPermission = await PermissionHelper.getMicrophonePermission(
       context,
     );
+
+    // If permission is still not granted, try to trigger it through speech_to_text
+    if (!hasPermission) {
+      try {
+        final speech = SpeechToText();
+        await speech.initialize(
+          onError: (error) {
+            debugPrint('Permission check error: $error');
+          },
+        );
+        // Try to start listening briefly to trigger permission
+        await speech.listen(
+          onResult: (result) {},
+          listenFor: const Duration(seconds: 1),
+        );
+        await speech.stop();
+        hasPermission = true;
+      } catch (e) {
+        debugPrint('Failed to trigger permission: $e');
+        return;
+      }
+    }
+
     if (!hasPermission) return;
 
     _isListening = true;
     notifyListeners();
     // Start listening to audio and convert to text
     await _listenAndTranscribe(context);
-
-    // Add your voice listening logic here
   }
 
   Future<void> _listenAndTranscribe(BuildContext context) async {
     try {
       final speech = SpeechToText();
+
+      // Initialize speech recognition - this will trigger permission request on iOS
       bool available = await speech.initialize(
         onStatus: (status) {
+          debugPrint('Speech recognition status: $status');
           if (status == 'notListening') {
             stopListening();
           }
         },
         onError: (error) {
-          stopListening();
           debugPrint('Speech recognition error: $error');
+          stopListening();
+
+          // If permission is denied, show settings dialog
+          if (error.errorMsg.contains('permission') ||
+              error.errorMsg.contains('denied')) {
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Microphone Permission Required'),
+                    content: const Text(
+                      'Please enable microphone access in Settings to use voice input.',
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Open Settings'),
+                        onPressed: () {
+                          openAppSettings();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          }
         },
       );
 
@@ -123,7 +185,7 @@ class HomeViewModel extends ChangeNotifier {
         await speech.listen(
           onResult: (result) {
             if (result.finalResult) {
-              setVoiceInput(result.recognizedWords);
+              setVoiceInput(result.recognizedWords, context);
               stopListening();
             }
           },
@@ -144,22 +206,39 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setVoiceInput(String input) async {
+  Future<void> setVoiceInput(String input, BuildContext context) async {
     _voiceInput = input;
     setSearchQuery(input); // Update search query with voice input
     searchController.text = input; // Set text in the search input box
     _isListening = false; // Stop listening after input is set
     notifyListeners();
-    
+
     try {
-      final mcpResp = await _voiceAssistService.processVoiceMessageFromMCP(input);
+      final mcpResp = await _voiceAssistService.processVoiceMessageFromMCP(
+        input,
+      );
       if (mcpResp != null && mcpResp.isNotEmpty) {
         // Handle MCP response if needed
         debugPrint('MCP Response: $mcpResp');
-        
-        // If the response contains an error, you might want to show it to the user
-        if (mcpResp.startsWith('Error:') || mcpResp.startsWith('Exception:')) {
-          debugPrint('MCP Error: $mcpResp');
+        if (mcpResp.contains('login_url')) {
+          // Directly open in WebView with disabled drag
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            enableDrag: false,
+            // Disable bottom sheet drag to allow WebView scrolling
+            builder:
+                (context) => MCPWebViewBottomSheet(
+                  url: this.mcpUrl,
+                  onClose: () => _handleMCPClose(context),
+                ),
+          );
+        } else {
+          if (input.contains('transaction')) {
+          } else if (input.contains('portfolio')) {
+            // Handle portfolio related voice input
+          }
         }
       }
     } catch (e) {
@@ -193,6 +272,38 @@ class HomeViewModel extends ChangeNotifier {
   // Get localized text
   String getLocalizedText(String englishText, String hindiText) {
     return _selectedLanguage == LanguageType.hindi ? hindiText : englishText;
+  }
+
+  // Handle MCP WebView close
+  Future<void> _handleMCPClose(BuildContext context) async {
+    debugPrint('MCP WebView closed, calling MCP URL again');
+
+    try {
+      // Call the MCP service again with the same voice input
+      final mcpResp = await _voiceAssistService.processVoiceMessageFromMCP(
+        _voiceInput,
+      );
+      if (mcpResp != null && mcpResp.isNotEmpty) {
+        debugPrint('MCP Response after close: $mcpResp');
+
+        // If the response still contains login_url, show the WebView again
+        if (mcpResp.contains('login_url')) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            enableDrag: false,
+            builder:
+                (context) => MCPWebViewBottomSheet(
+                  url: this.mcpUrl,
+                  onClose: () => _handleMCPClose(context),
+                ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error calling MCP after close: $e');
+    }
   }
 
   @override
