@@ -43,18 +43,30 @@ class EPFDisplayBottomSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
+                const Icon(
+                  Icons.account_balance_wallet,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
                 const Text(
-                  'EPF Account Details',
+                  'MCP View - EPF Account Details',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: Colors.white, size: 24),
                   onPressed: () => Navigator.of(context).pop(),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
               ],
             ),

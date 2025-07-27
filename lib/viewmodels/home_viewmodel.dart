@@ -10,6 +10,7 @@ import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
 import '../services/voice_assist_service.dart';
 import '../utils/permission_helper.dart';
+import '../utils/bottom_sheet_helper.dart';
 import '../widgets/epf_display_bottom_sheet.dart';
 import '../widgets/mcp_webview_bottom_sheet.dart';
 import '../widgets/transaction_display_bottom_sheet.dart';
@@ -268,65 +269,17 @@ class HomeViewModel extends ChangeNotifier {
           } else if (input.contains('portfolio')) {
             // Handle portfolio related voice input
           } else {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              enableDrag: false,
-              builder: (context) => Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'No details found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            );
+            BottomSheetHelper.showNoDetailsFoundBottomSheet(context);
             clearSearch();
             setVoiceInput('', context);
             searchController.text = ''; // Set text in the search input box
           }
         }
       } else {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              enableDrag: false,
-              builder: (context) => Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'No details found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            );
-        clearSearch();
-        setVoiceInput('', context);
-        searchController.text = ''; // Set text in the search input box
+            BottomSheetHelper.showNoDetailsFoundBottomSheet(context);
+            clearSearch();
+            setVoiceInput('', context);
+            searchController.text = ''; // Set text in the search input box
       }
     } catch (e) {
       debugPrint('Error processing MCP request: $e');
