@@ -10,7 +10,9 @@ import '../models/portfolio_model.dart';
 import '../services/home_service.dart';
 import '../services/voice_assist_service.dart';
 import '../utils/permission_helper.dart';
+import '../widgets/epf_display_bottom_sheet.dart';
 import '../widgets/mcp_webview_bottom_sheet.dart';
+import '../widgets/transaction_display_bottom_sheet.dart';
 
 enum HomeViewState { initial, loading, loaded, error }
 
@@ -207,15 +209,17 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> setVoiceInput(String input, BuildContext context) async {
-    _voiceInput = input;
+    _voiceInput = input.toLowerCase();
     setSearchQuery(input); // Update search query with voice input
     searchController.text = input; // Set text in the search input box
     _isListening = false; // Stop listening after input is set
     notifyListeners();
-
+    if (input.trim().isEmpty) {
+      return;
+    }
     try {
       final mcpResp = await _voiceAssistService.processVoiceMessageFromMCP(
-        input,
+        _voiceInput,
       );
       if (mcpResp != null && mcpResp.isNotEmpty) {
         // Handle MCP response if needed
@@ -236,6 +240,31 @@ class HomeViewModel extends ChangeNotifier {
           );
         } else {
           if (input.contains('transaction')) {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              enableDrag: false,
+              builder:
+                  (context) =>
+                      TransactionDisplayBottomSheet(jsonResponse: mcpResp),
+            );
+            clearSearch();
+            setVoiceInput('', context);
+            // Handle other transaction related voice input
+          } else if (_voiceInput.contains('epf') ||
+              _voiceInput.contains('provident fund') ||
+              mcpResp.contains('"uanAccounts"')) {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              enableDrag: false,
+              builder:
+                  (context) => EPFDisplayBottomSheet(jsonResponse: mcpResp),
+            );
+            clearSearch();
+            setVoiceInput('', context);
           } else if (input.contains('portfolio')) {
             // Handle portfolio related voice input
           }
@@ -299,6 +328,36 @@ class HomeViewModel extends ChangeNotifier {
                   onClose: () => _handleMCPClose(context),
                 ),
           );
+        } else {
+          if (_voiceInput.contains('transaction')) {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              enableDrag: false,
+              builder:
+                  (context) =>
+                      TransactionDisplayBottomSheet(jsonResponse: mcpResp),
+            );
+            clearSearch();
+            setVoiceInput('', context);
+            // Handle other transaction related voice input
+          } else if (_voiceInput.contains('epf') ||
+              _voiceInput.contains('provident fund') ||
+              mcpResp.contains('"uanAccounts"')) {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              enableDrag: false,
+              builder:
+                  (context) => EPFDisplayBottomSheet(jsonResponse: mcpResp),
+            );
+            clearSearch();
+            setVoiceInput('', context);
+          } else if (_voiceInput.contains('portfolio')) {
+            // Handle portfolio related voice input
+          }
         }
       }
     } catch (e) {

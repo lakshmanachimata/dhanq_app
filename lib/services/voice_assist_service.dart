@@ -151,7 +151,8 @@ class VoiceAssistService {
           ),
           headers: {
             'Content-Type': 'application/json',
-            'Mcp-Session-Id': 'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
+            'Mcp-Session-Id':
+                'mcp-session-594e48ea-fea1-40ef-8c52-7552dd9272af',
           },
           body: jsonBody,
         );
@@ -168,13 +169,13 @@ class VoiceAssistService {
           );
           return 'Error: ${response.statusCode} - ${response.body}';
         }
-      } else if (query.toLowerCase().contains('budget')) {
+      } else if (query.toLowerCase().contains('epf')) {
         // Similar implementation for budget queries
         final payload = {
           'jsonrpc': '2.0',
           'id': 2,
           'method': 'tools/call',
-          'params': {'name': 'fetch_budget_info', 'arguments': {}},
+          'params': {'name': 'fetch_epf_details', 'arguments': {}},
         };
 
         final jsonBody = jsonEncode(payload);
@@ -195,7 +196,7 @@ class VoiceAssistService {
           return response.body;
         } else {
           debugPrint(
-            'MCP Budget API Error: ${response.statusCode} - ${response.body}',
+            'MCP EPF API Error: ${response.statusCode} - ${response.body}',
           );
           return 'Error: ${response.statusCode} - ${response.body}';
         }
