@@ -269,6 +269,9 @@ class HomeViewModel extends ChangeNotifier {
             // Handle portfolio related voice input
           }
         }
+      } else {
+        clearSearch();
+        setVoiceInput('', context);
       }
     } catch (e) {
       debugPrint('Error processing MCP request: $e');
